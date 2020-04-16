@@ -53,7 +53,7 @@ const loginController=async(req,res)=>{
       exprieDate.setDate(exprieDate.getDate() + 14)
       console.log( exprieDate)
       const token =jwt.sign({_id:user.id,expire_date: exprieDate},process.env.TOKEN_SECRET)
-      res.header('auth-token',token).send({token:token})
+      res.header('auth-token',token).send({token:token,role:user.role})
 }
 module.exports.registerController=registerController
 module.exports.loginController=loginController
