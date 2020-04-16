@@ -4,6 +4,9 @@ const authRoute = require("./routes/auth")
 const mongoose = require("mongoose")
 const dotenv =require("dotenv")
 const postRoute =require("./routes/post")
+const cors = require('cors')
+
+app.use(cors())
 app.use(express.json())
 
 dotenv.config()

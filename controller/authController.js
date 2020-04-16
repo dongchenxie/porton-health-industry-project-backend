@@ -10,7 +10,7 @@ const registerController=async(req,res)=>{
     //check if email exists in db
     const emailExist= await User.findOne({email:req.body.email})
     if(emailExist){
-        return res.status(400).send("email already exists")
+        return res.status(400).send({error:"email already exists"})
     }
     //hashing
     const salt=await bcrypt.genSalt(10);
@@ -26,7 +26,7 @@ const registerController=async(req,res)=>{
         return res.send({user:user._id})
 
     } catch (err) {
-        return res.status(400).send(err)
+        return res.status(400).send({error:err})
     }
     return res.status(500).send("register error")
 }
@@ -39,20 +39,21 @@ const loginController=async(req,res)=>{
       //check email exists
       const user= await User.findOne({email:req.body.email})
       if(!user){
-          return res.status(400).send("email dose not exists")
+          return res.status(400).send({error:"email dose not exists"})
       }
       //check password
       console.log(user)
       const vaildPass =await bcrypt.compare(req.body.password,user.password)
       if(!vaildPass){
-          return res.status(400).send("Incorrect password")
+          return res.status(400).send({error:"Incorrect password"})
       }
       //Create token
+   
       const exprieDate = new Date()
       exprieDate.setDate(exprieDate.getDate() + 14)
       console.log( exprieDate)
       const token =jwt.sign({_id:user.id,expire_date: exprieDate},process.env.TOKEN_SECRET)
-      return res.header('auth-token',token).send(token)
+      res.header('auth-token',token).send({token:token})
 }
 module.exports.registerController=registerController
 module.exports.loginController=loginController
