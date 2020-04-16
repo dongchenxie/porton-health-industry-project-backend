@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 
 
 const userSchema = new mongoose.Schema({
-    name: {
+    name: {// need to split to first name and last name
         type: String,
         require: true,
         min: 6,
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    role:{
+    role:{//SYSTEM_ADMIN CLIENT_ADMIN
         type:String,
         max:255,
         default:"none"

@@ -3,12 +3,13 @@ const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
 const {registerValidation,loginValidation} = require("../component/validation")
 const registerController=async(req,res)=>{
+    //validation
     const { error } = registerValidation(req.body)
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
     //check if email exists in db
-    const emailExist= await User.findOne({email:req.body.email})
+    const emailExist= await User.findOne({email:req.body.email})//mongoose query
     if(emailExist){
         return res.status(400).send({error:"email already exists"})
     }
@@ -23,7 +24,7 @@ const registerController=async(req,res)=>{
     })
     try {
         const saveUser = await user.save()
-        return res.send({user:user._id})
+        return res.status(201)//successfully created an account
 
     } catch (err) {
         return res.status(400).send({error:err})
