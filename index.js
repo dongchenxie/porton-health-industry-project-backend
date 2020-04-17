@@ -26,7 +26,12 @@ app.use(express.json())
 app.use(express.urlencoded());
 dotenv.config()
 
-app.use('/api/user', authRoute)
+//handle 404 error
+app.use((req,res,next) => {
+    const error = new httpError('Could not find the route' , 404);
+    return next(error);
+})
+
 mongoose.connect(process.env.DB_CONNECTION,
     { useNewUrlParser: true,useUnifiedTopology: true },
     () => {
