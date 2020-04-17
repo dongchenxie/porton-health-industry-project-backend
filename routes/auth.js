@@ -17,4 +17,6 @@ router.post("/register", async (req, res) => {
 router.post("/login",async (req,res)=>{
     return await loginController(req,res)
 })
+//getUserById
+router.get('/:userId', authController.getUserById )
 module.exports = router

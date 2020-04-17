@@ -1,6 +1,7 @@
 const User = require("../model/User")
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
+const httpError = require('../models/http-error')
 const {registerValidation,loginValidation} = require("../component/validation")
 const registerController=async(req,res)=>{
     //validation
@@ -13,6 +14,21 @@ const registerController=async(req,res)=>{
     if(emailExist){
         return res.status(400).send({error:"email already exists"})
     }
+    // getUserById
+    const getUserById = async (req, res, next) => {
+        const userId = req.params.userId
+        let user
+        try {
+            user = await User.findById((userId), 'password')
+         } catch(err){
+                return next(new httpError('Fetching user failed', 500))
+            }
+            res.json({
+                users : users.map(usr => usr.toObject({ getters : true}))
+            })
+        }
+    }
+
     //hashing
     const salt=await bcrypt.genSalt(10);
     const hashedPassword =await bcrypt.hash(req.body.password, salt)
