@@ -3,16 +3,22 @@ const mongoose = require("mongoose")
 
 
 const userSchema = new mongoose.Schema({
-    name: {// need to split to first name and last name
+    firstName: {// need to split to first name and last name
         type: String,
         require: true,
-        min: 6,
+        min: 1,
+        max: 255
+    },
+    lastName: {
+        type: String,
+        require: true,
+        min: 1,
         max: 255
     },
     email: {
         type: String,
         require: true,
-        min: 6,
+        min: 5,
         max: 255
     },
     password: {
@@ -27,9 +33,7 @@ const userSchema = new mongoose.Schema({
     },
     role:{//SYSTEM_ADMIN CLIENT_ADMIN
         type:String,
-        max:255,
-        enum:["SYSTEM_ADMIN", "CLIENT_ADMIN"]
-        
+        enum:["SYSTEM_ADMIN", "CLIENT_ADMIN"]      
     },
     isEnabled: {
         type: Boolean,
