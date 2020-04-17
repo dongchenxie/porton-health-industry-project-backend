@@ -6,19 +6,19 @@ const userSchema = new mongoose.Schema({
     firstName: {// need to split to first name and last name
         type: String,
         require: true,
-        min: 6,
+        min: 1,
         max: 255
     },
     lastName: {
         type: String,
         require: true,
-        min: 6,
+        min: 1,
         max: 255
     },
     email: {
         type: String,
         require: true,
-        min: 6,
+        min: 5,
         max: 255
     },
     password: {
