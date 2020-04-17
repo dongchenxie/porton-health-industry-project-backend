@@ -28,7 +28,12 @@ const userSchema = new mongoose.Schema({
     role:{//SYSTEM_ADMIN CLIENT_ADMIN
         type:String,
         max:255,
-        default:"none"
+        enum:["SYSTEM_ADMIN", "CLIENT_ADMIN"]
+        
+    },
+    isEnabled: {
+        type: Boolean,
+        default: true
     }
 })
 module.exports = mongoose.model("User", userSchema)
