@@ -1,7 +1,7 @@
 const User = require("../model/User")
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
-const httpError = require('../models/http-error')
+// const httpError = require('../models/http-error')
 const {registerValidation,loginValidation} = require("../component/validation")
 const registerController=async(req,res)=>{
     //validation
@@ -14,20 +14,7 @@ const registerController=async(req,res)=>{
     if(emailExist){
         return res.status(400).send({error:"email already exists"})
     }
-    // getUserById
-    const getUserById = async (req, res, next) => {
-        const userId = req.params.userId
-        let user
-        try {
-            user = await User.findById((userId), '-password')
-         } catch(err){
-                return next(new httpError('Fetching user failed', 500))
-            }
-            res.json({
-                users : users.map(usr => usr.toObject({ getters : true}))
-            })
-        }
-    }
+    
 
     //hashing
     const salt=await bcrypt.genSalt(10);
@@ -72,5 +59,25 @@ const loginController=async(req,res)=>{
       const token =jwt.sign({_id:user.id,expire_date: exprieDate},process.env.TOKEN_SECRET)
       res.header('auth-token',token).send({token:token,role:user.role})
 }
+const userController = async(req, res)=>{
+    const getUserById = async (req, res, next) => {
+        const userId = req.params.userId    
+        let user
+        try {
+            user = await User.findById((userId), '-password')
+        }  catch (err) {
+            return res.status(500).send({error:err})
+        }
+    
+        if(!user) {
+            return res.status(404).send("register error")
+        }
+    
+        res.json({ user : user.toObject({ getters: true }) })
+    }
+    
+}
+
 module.exports.registerController=registerController
 module.exports.loginController=loginController
+module.exports.userController=userController

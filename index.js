@@ -27,18 +27,19 @@ app.use(express.urlencoded());
 dotenv.config()
 
 //handle 404 error
-app.use((req,res,next) => {
-    const error = new httpError('Could not find the route' , 404);
-    return next(error);
-})
-app.use((error,req,res,next) => {
+// app.use((req,res,next) => {
+//     const error = new httpError('Could not find the route' , 404);
+//     return next(error);
+// })
+// //handle 500 error
+// app.use((error,req,res,next) => {
 
-    if(res.headerSent) {
-        return next(error)
-    }
-    res.status(error.code||500) 
-    res.json({message:error.message || 'An unknown message occured'})
-});
+//     if(res.headerSent) {
+//         return next(error)
+//     }
+//     res.status(error.code||500) 
+//     res.json({message:error.message || 'An unknown message occured'})
+// });
 
 mongoose.connect(process.env.DB_CONNECTION,
     { useNewUrlParser: true,useUnifiedTopology: true },

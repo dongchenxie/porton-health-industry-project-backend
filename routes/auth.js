@@ -5,7 +5,8 @@ const jwt=require("jsonwebtoken")
 const {registerValidation,loginValidation} = require("../component/validation")
 const {
     registerController,
-    loginController
+    loginController,
+    userController
 }=require("../controller/authController")
 //validation
 
@@ -18,5 +19,5 @@ router.post("/login",async (req,res)=>{
     return await loginController(req,res)
 })
 //getUserById
-router.get('/:userId', authController.getUserById )
+router.get('/:userId', userController.getUserById )
 module.exports = router
