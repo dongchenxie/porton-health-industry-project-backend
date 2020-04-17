@@ -42,6 +42,7 @@ const loginController=async(req,res)=>{
       if(!user){
           return res.status(400).send({error:"email dose not exists"})
       }
+      if(user.isEnabled==false){return res.status(400).send({error:"The account is not enabled"})}
       //check password
       console.log(user)
       const vaildPass =await bcrypt.compare(req.body.password,user.password)
