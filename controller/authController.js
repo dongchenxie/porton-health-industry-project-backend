@@ -19,7 +19,7 @@ const registerController=async(req,res)=>{
         const userId = req.params.userId
         let user
         try {
-            user = await User.findById((userId), 'password')
+            user = await User.findById((userId), '-password')
          } catch(err){
                 return next(new httpError('Fetching user failed', 500))
             }

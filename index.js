@@ -26,7 +26,7 @@ app.use(express.json())
 app.use(express.urlencoded());
 dotenv.config()
 
-
+app.use('/api/user', authRoute)
 mongoose.connect(process.env.DB_CONNECTION,
     { useNewUrlParser: true,useUnifiedTopology: true },
     () => {
