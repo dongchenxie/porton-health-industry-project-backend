@@ -1,7 +1,7 @@
 const User = require("../model/User")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { registerValidation, loginValidation, updateValidation } = require("../component/validation")
+const { registerValidation, loginValidation, updateValidation, resetPasswordValidation } = require("../component/validation")
 const registerController = async (req, res) => {
     //validation
     const { error } = registerValidation(req.body)
@@ -26,8 +26,7 @@ const registerController = async (req, res) => {
     })
     try {
         await user.save()
-        return res.status(201)//successfully created an account
-
+        return res.status(201).send()//successfully created an account
     } catch (err) {
         return res.status(400).send({ error: err })
     }
@@ -83,18 +82,43 @@ const updateUserController = async (req, res) => {
         return res.status(400).send({ error: "Email already exists." })
     }
     try {
-        const updatedUser = await User.findByIdAndUpdate(userId, {
+        await User.findByIdAndUpdate(userId, {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
             role: req.body.role
         })
-        return res.status(201).send(updatedUser)
+        return res.status(200).send()
     } catch (err) {
         return res.status(400).send({ error: "Failed to update user." })
     }
 }
+const resetPasswordController = async (req, res) => {
+    const { error } = resetPasswordValidation(req.body)
+    if (error) {
+        return res.status(400).send(error.details[0].message)
+    }
+    const { userId } = req.params
+    try {
+        await User.findById(userId)
+    } catch (err) {
+        return res.status(400).send({ error: "Invalid user Id." })
+    }
+    //hashing
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt)
+    try {
+        await User.findByIdAndUpdate(userId, {
+            password: hashedPassword
+        })
+        return res.status(200).send()
+    } catch (err) {
+        return res.status(400).send({ error: "Invalid user Id." })
+    }
+}
+
 module.exports.registerController = registerController
 module.exports.loginController = loginController
 module.exports.getUserController = getUserController
 module.exports.updateUserController = updateUserController
+module.exports.resetPasswordController = resetPasswordController

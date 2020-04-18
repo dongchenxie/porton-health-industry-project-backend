@@ -7,7 +7,8 @@ const {
     registerController,
     loginController,
     getUserController,
-    updateUserController
+    updateUserController,
+    resetPasswordController
 } = require("../controller/authController")
 //validation
 
@@ -26,5 +27,9 @@ router.get("/:userId", async (req, res) => {
 //UpdateUserById
 router.put("/:userId", async (req, res) => {
     return await updateUserController(req, res)
+})
+//ResetPasswordById
+router.put("/passwordReset/:userId", async (req, res) => {
+    return await resetPasswordController(req, res)
 })
 module.exports = router
