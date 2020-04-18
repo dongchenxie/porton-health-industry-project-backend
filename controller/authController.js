@@ -67,12 +67,10 @@ const getUserController = async(req, res)=>{
             user = await User.findById((userId))
             return res.status(200).send(user)
         }  catch (err) {
-            return res.status(500).send({error:err})
+            return res.status(400).send({error:err})
         }
     
-        if(!user) {
-            return res.status(404).send("register error")
-        }
+    
     
         res.json({ user : user.toObject({ getters: true }) })
     }
