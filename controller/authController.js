@@ -59,12 +59,13 @@ const loginController=async(req,res)=>{
       const token =jwt.sign({_id:user.id,expire_date: exprieDate},process.env.TOKEN_SECRET)
       res.header('auth-token',token).send({token:token,role:user.role})
 }
-const userController = async(req, res)=>{
-    const getUserById = async (req, res, next) => {
+const getUserController = async(req, res)=>{
+   
         const userId = req.params.userId    
         let user
         try {
-            user = await User.findById((userId), '-password')
+            user = await User.findById((userId))
+            return res.status(200).send(user)
         }  catch (err) {
             return res.status(500).send({error:err})
         }
@@ -76,8 +77,8 @@ const userController = async(req, res)=>{
         res.json({ user : user.toObject({ getters: true }) })
     }
     
-}
+
 
 module.exports.registerController=registerController
 module.exports.loginController=loginController
-module.exports.userController=userController
+module.exports.getUserController=getUserController
