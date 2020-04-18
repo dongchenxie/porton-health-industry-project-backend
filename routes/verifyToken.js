@@ -11,7 +11,7 @@ module.exports.auth = function(role){
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);
         const user= await User.findOne({_id:verified._id})//mongoose query
         if(!user){
-            throw new Expectation()
+            res.status(400).send("Invalid Token");
         }
         console.log("User with role: "+user.role)
         if(user.role!=role){
