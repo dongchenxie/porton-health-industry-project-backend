@@ -88,7 +88,7 @@ const updateUserController = async (req, res) => {
             email: req.body.email,
             role: req.body.role
         })
-        return res.status(200)
+        return res.status(200).send()
     } catch (err) {
         return res.status(400).send({ error: "Failed to update user." })
     }
