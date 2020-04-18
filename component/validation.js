@@ -27,6 +27,6 @@ const updateValidation = (data) => {
     })
     return schema.validate(data)
 }
-module.exports.registerValidation=registerValidation
+module.exports.registerValidation = registerValidation
 module.exports.loginValidation = loginValidation
 module.exports.updateValidation = updateValidation
