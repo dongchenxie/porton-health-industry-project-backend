@@ -11,8 +11,7 @@ const registerValidation = (data)=>{
     return schema.validate(data)
 }
 const loginValidation=(data)=>{
-    const schema =Joi.object( {
-        
+    const schema =Joi.object( {       
         email: Joi.string().min(4).required().email(),
         password: Joi.string().min(6).required()
     })
@@ -27,6 +26,13 @@ const updateValidation = (data) => {
     })
     return schema.validate(data)
 }
+const resetPasswordValidation = (data) => {
+    const schema = Joi.object({
+        password: Joi.string().min(6).required()
+    })
+    return schema.validate(data)
+}
 module.exports.registerValidation=registerValidation
 module.exports.loginValidation = loginValidation
 module.exports.updateValidation = updateValidation
+module.exports.resetPasswordValidation = resetPasswordValidation
