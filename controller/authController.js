@@ -59,21 +59,22 @@ const loginController=async(req,res)=>{
       const token =jwt.sign({_id:user.id,expire_date: exprieDate},process.env.TOKEN_SECRET)
       res.header('auth-token',token).send({token:token,role:user.role})
 }
-const getUserController = async(req, res)=>{
+ const getUserController = async(req, res)=>{
    
-        const userId = req.params.userId    
-        let user
-        try {
+         const userId = req.params.userId    
+         let user
+         try {
             user = await User.findById((userId))
-            return res.status(200).send(user)
+             return res.status(200).send(user)
         }  catch (err) {
-            return res.status(400).send({error:err})
+             return res.status(400).send({error:"User id does not exist"})
         }
     
     
     
-        res.json({ user : user.toObject({ getters: true }) })
+         res.json({ user : user.toObject({ getters: true }) })
     }
+
     
 
 
