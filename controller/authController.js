@@ -59,8 +59,7 @@ const loginController = async (req, res) => {
 const getUserController = async (req, res) => {
     const { userId } = req.params
     try {
-        const user = await User
-            .findById(userId, { password: 0 })
+        const user = await User.findById(userId, { password: 0 })
             .select("-password -__v")
         return res.status(200).send(user)
     } catch (err) {
@@ -137,15 +136,13 @@ const getUsersController = async (req, res) => {
         }
     }
     try {
-        const users = await User
-            .find(query)
+        const users = await User.find(query)
             .select("-password -__v")
             .limit(perPage)
             .skip((page - 1) * perPage)
             .sort(sorter)
             .exec()
-
-        const total = await User.find().countDocuments()
+        const total = await User.find(query).countDocuments()
         return res.status(200).send({
             users,
             totalResults: total,
