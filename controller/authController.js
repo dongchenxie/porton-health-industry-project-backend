@@ -59,7 +59,9 @@ const loginController = async (req, res) => {
 const getUserController = async (req, res) => {
     const { userId } = req.params
     try {
-        const user = await User.findById(userId, { password: 0 })
+        const user = await User
+            .findById(userId, { password: 0 })
+            .select("-password -__v")
         return res.status(200).send(user)
     } catch (err) {
         return res.status(400).send({ error: "Invalid user Id." })
@@ -134,12 +136,10 @@ const getUsersController = async (req, res) => {
             }
         }
     }
-    console.log(query)
-    console.log(sorter)
     try {
         const users = await User
             .find(query)
-            .select({ password: 0 })
+            .select("-password -__v")
             .limit(perPage)
             .skip((page - 1) * perPage)
             .sort(sorter)
@@ -156,7 +156,6 @@ const getUsersController = async (req, res) => {
             prevPage: page - 1 <= 0 ? null : page - 1
         })
     } catch (err) {
-        console.log(err)
         return res.status(400).send({ error: "Failed to get users." })
     }
 }
