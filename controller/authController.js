@@ -1,7 +1,7 @@
 const User = require("../model/User")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { registerValidation, loginValidation, updateValidation, resetPasswordValidation } = require("../component/validation")
+const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation } = require("../component/validation")
 const registerController = async (req, res) => {
     //validation
     const { error } = registerValidation(req.body)
@@ -59,7 +59,8 @@ const loginController = async (req, res) => {
 const getUserController = async (req, res) => {
     const { userId } = req.params
     try {
-        const user = await User.findById(userId)
+        const user = await User.findById(userId, { password: 0 })
+            .select("-password -__v")
         return res.status(200).send(user)
     } catch (err) {
         return res.status(400).send({ error: "Invalid user Id." })
@@ -116,9 +117,49 @@ const resetPasswordController = async (req, res) => {
         return res.status(400).send({ error: "Invalid user Id." })
     }
 }
+const getUsersController = async (req, res) => {
+    const { error } = getUsersValidation(req.query)
+    if (error) {
+        return res.status(400).send(error.details[0].message)
+    }
+    const { page = 1 } = req.query
+    const perPage = 10
+    let query = {}
+    let sorter = {}
+    for (let key in req.query) {
+        if (key) {
+            if (key != "page" && key != "sort_by") {
+                query[key] = new RegExp('^' + req.query[key] + '$', "i")
+            } else if (key = "sort_by") {
+                sorter[req.query[key]] = 1
+            }
+        }
+    }
+    try {
+        const users = await User.find(query)
+            .select("-password -__v")
+            .limit(perPage)
+            .skip((page - 1) * perPage)
+            .sort(sorter)
+            .exec()
+        const total = await User.find(query).countDocuments()
+        return res.status(200).send({
+            users,
+            totalResults: total,
+            perPage: perPage,
+            totalPages: Math.ceil(total / perPage),
+            currentPage: page,
+            nextPage: page + 1 >= Math.ceil(total / perPage) ? null : page + 1,
+            prevPage: page - 1 <= 0 ? null : page - 1
+        })
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to get users." })
+    }
+}
 
 module.exports.registerController = registerController
 module.exports.loginController = loginController
 module.exports.getUserController = getUserController
 module.exports.updateUserController = updateUserController
 module.exports.resetPasswordController = resetPasswordController
+module.exports.getUsersController = getUsersController
