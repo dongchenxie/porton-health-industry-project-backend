@@ -31,7 +31,7 @@ dotenv.config()
 mongoose.connect(process.env.DB_CONNECTION,
     { useNewUrlParser: true,useUnifiedTopology: true },
     () => {
-        console.log("connect to db")
+        console.log("connected to db")
     })
 app.use("/api/user", authRoute)
 app.use("/api/posts", postRoute)

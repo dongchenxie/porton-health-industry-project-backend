@@ -1,7 +1,8 @@
 const User = require("../model/User")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation } = require("../component/validation")
+const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission } = require("../component/validation")
+
 const registerController = async (req, res) => {
     //validation
     const { error } = registerValidation(req.body)
@@ -31,6 +32,7 @@ const registerController = async (req, res) => {
         return res.status(400).send({ error: err })
     }
 }
+
 const loginController = async (req, res) => {
     //validation
     const { error } = loginValidation(req.body)
@@ -56,6 +58,7 @@ const loginController = async (req, res) => {
     const token = jwt.sign({ _id: user.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
     return res.header('auth-token', token).send({ token: token, role: user.role })
 }
+
 const getUserController = async (req, res) => {
     const { userId } = req.params
     try {
@@ -66,6 +69,7 @@ const getUserController = async (req, res) => {
         return res.status(400).send({ error: "Invalid user Id." })
     }
 }
+
 const updateUserController = async (req, res) => {
     const { error } = updateValidation(req.body)
     if (error) {
@@ -94,6 +98,7 @@ const updateUserController = async (req, res) => {
         return res.status(400).send({ error: "Failed to update user." })
     }
 }
+
 const resetPasswordController = async (req, res) => {
     const { error } = resetPasswordValidation(req.body)
     if (error) {
@@ -117,6 +122,39 @@ const resetPasswordController = async (req, res) => {
         return res.status(400).send({ error: "Invalid user Id." })
     }
 }
+
+const updatePermissionController = async (req, res) => {
+    // const { error } = updatePermission(req.body)
+    
+    // if (error) {
+    //     return res.status(400).send(error.details[0].message)
+    // }
+
+    // const { userId } = req.params
+    // try {
+    //     await User.findById(userId)
+    // } catch (err) {
+    //     return res.status(400).send({ error: "Invalid user Id." })
+    // }
+    const { userId } = req.params
+    try {
+        const user = await User.findById(userId, { password: 0 })
+            .select("-password -__v")
+        return res.status(200).send(user)
+    } catch (err) {
+        return res.status(400).send({ error: "Invalid user Id." })
+    }
+
+    // try {
+    //     await User.findByIdAndUpdate(userId, {
+    //         isEnabled: false
+    //     })
+    //     return res.status(200).send()
+    // } catch (err) {
+    //     return res.status(400).send({ error: "Failed to update user permission." })
+    // }
+}
+
 const getUsersController = async (req, res) => {
     const { error } = getUsersValidation(req.query)
     if (error) {
@@ -157,9 +195,10 @@ const getUsersController = async (req, res) => {
     }
 }
 
-module.exports.registerController = registerController
-module.exports.loginController = loginController
-module.exports.getUserController = getUserController
-module.exports.updateUserController = updateUserController
-module.exports.resetPasswordController = resetPasswordController
-module.exports.getUsersController = getUsersController
+module.exports.registerController = registerController;
+module.exports.loginController = loginController;
+module.exports.getUserController = getUserController;
+module.exports.updateUserController = updateUserController;
+module.exports.resetPasswordController = resetPasswordController;
+module.exports.getUsersController = getUsersController;
+module.exports.updatePermissionController = updatePermissionController;
