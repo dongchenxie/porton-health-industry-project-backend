@@ -51,7 +51,7 @@ const getUsersValidation = (data) => {
 
 const updatePermission = data => {
     const schema = Joi.object({
-        isEnabled: Joi.boolean()
+        isEnabled: Joi.boolean().required()
     })
     return schema.validate(data)
 }
