@@ -2,13 +2,15 @@ const router = require("express").Router()
 const User = require("../model/User")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+
 const { registerValidation, loginValidation } = require("../component/validation")
 const {
     registerController,
     loginController,
     getUserController,
     updateUserController,
-    resetPasswordController
+    resetPasswordController,
+    getTokenInformationController
 } = require("../controller/authController")
 //validation
 
@@ -31,5 +33,9 @@ router.put("/:userId", async (req, res) => {
 //ResetPasswordById
 router.put("/passwordReset/:userId", async (req, res) => {
     return await resetPasswordController(req, res)
+})
+
+router.get("/readToken/:token", async (req, res) => {
+    return await getTokenInformationController(req, res)
 })
 module.exports = router
