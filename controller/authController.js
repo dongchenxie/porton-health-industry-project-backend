@@ -124,35 +124,26 @@ const resetPasswordController = async (req, res) => {
 }
 
 const updatePermissionController = async (req, res) => {
-    // const { error } = updatePermission(req.body)
-    
-    // if (error) {
-    //     return res.status(400).send(error.details[0].message)
-    // }
+    const { error } = updatePermission(req.body)
 
-    // const { userId } = req.params
-    // try {
-    //     await User.findById(userId)
-    // } catch (err) {
-    //     return res.status(400).send({ error: "Invalid user Id." })
-    // }
+    if (error) {
+        return res.status(400).send(error.details[0].message)
+    }
     const { userId } = req.params
     try {
-        const user = await User.findById(userId, { password: 0 })
-            .select("-password -__v")
-        return res.status(200).send(user)
+        await User.findById(userId)
     } catch (err) {
         return res.status(400).send({ error: "Invalid user Id." })
     }
 
-    // try {
-    //     await User.findByIdAndUpdate(userId, {
-    //         isEnabled: false
-    //     })
-    //     return res.status(200).send()
-    // } catch (err) {
-    //     return res.status(400).send({ error: "Failed to update user permission." })
-    // }
+    try {
+        await User.findByIdAndUpdate(userId, {
+           isEnabled: req.body.isEnabled
+        })
+        return res.status(200).send()
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to update user." })
+    }
 }
 
 const getUsersController = async (req, res) => {

@@ -32,7 +32,7 @@ router.put("/passwordReset/:userId", async (req, res) => {
 })
 
 //UpdatePermissionById
-router.get("/permission/:userId", async (req, res) => {
+router.put("/permission/:userId", async (req, res) => {
     return await updatePermissionController(req, res)
 })
 
