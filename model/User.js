@@ -1,7 +1,5 @@
 const mongoose = require("mongoose")
 
-
-
 const userSchema = new mongoose.Schema({
     firstName: {// need to split to first name and last name
         type: String,
