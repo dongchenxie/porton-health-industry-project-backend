@@ -181,7 +181,4 @@ module.exports.loginController = loginController
 module.exports.getUserController = getUserController
 module.exports.updateUserController = updateUserController
 module.exports.resetPasswordController = resetPasswordController
-<<<<<<< HEAD
-=======
 module.exports.getUsersController = getUsersController
->>>>>>> master
