@@ -7,19 +7,7 @@ const { registerValidation, loginValidation } = require("../component/validation
 
 const { registerController, loginController, getUserController, updateUserController, resetPasswordController, updatePermissionController } = require("../controller/authController")
 
-
-const {
-    registerController,
-    loginController,
-    getUserController,
-    updateUserController,
-    resetPasswordController,
-    getTokenInformationController,
-     updatePermissionController 
-} = require("../controller/authController")
-//validation
-
-
+//validationns:
 //Register
 router.post("/register", async (req, res) => {
     return await registerController(req, res)
