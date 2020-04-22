@@ -6,7 +6,7 @@ const registerController = async (req, res) => {
     //validation
     const { error } = registerValidation(req.body)
     if (error) {
-        return res.status(400).send(error.details[0].message)
+        return res.status(400).send({ error:error.details[0].message})
     }
     //check if email exists in db
     const emailExist = await User.findOne({ email: req.body.email })//mongoose query
