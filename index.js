@@ -5,6 +5,7 @@ const mongoose = require("mongoose")
 const dotenv =require("dotenv")
 const postRoute =require("./routes/post")
 const cors = require('cors')
+const usersRoute = require("./routes/users")
 
 const swaggerOptions={
     swaggerDefinition: {
@@ -48,6 +49,7 @@ mongoose.connect(process.env.DB_CONNECTION,
     })
 app.use("/api/user", authRoute)
 app.use("/api/posts", postRoute)
+app.use("/api/users", usersRoute)
 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
