@@ -7,7 +7,7 @@ const registerController = async (req, res) => {
     //validation
     const { error } = registerValidation(req.body)
     if (error) {
-        return res.status(400).send(error.details[0].message)
+        return res.status(400).send({ error:error.details[0].message})
     }
     //check if email exists in db
     const emailExist = await User.findOne({ email: req.body.email })//mongoose query
@@ -56,7 +56,9 @@ const loginController = async (req, res) => {
     exprieDate.setDate(exprieDate.getDate() + 14)
     console.log(exprieDate)
     const token = jwt.sign({ _id: user.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
-    return res.header('auth-token', token).send({ token: token, role: user.role })
+    console.log({ token: token, role: user.role })
+    user.password=null
+    return res.header('auth-token', token).send({ token: token, role: user.role,user:user})
 }
 
 const getUserController = async (req, res) => {
@@ -123,6 +125,7 @@ const resetPasswordController = async (req, res) => {
     }
 }
 
+
 const updatePermissionController = async (req, res) => {
     const { error } = updatePermission(req.body)
 
@@ -143,6 +146,23 @@ const updatePermissionController = async (req, res) => {
         return res.status(200).send()
     } catch (err) {
         return res.status(400).send({ error: "Failed to update user." })
+    }
+}
+
+
+const getTokenInformationController= async (req, res)=>{
+    const { token } = req.params
+    console.log(token)
+    if(!token) return res.status(401).send({error:"Missing auth token"})
+    try{
+        const verified = jwt.verify(token,process.env.TOKEN_SECRET);
+        const user= await User.findOne({_id:verified._id}).select("-password -__v")//mongoose query
+        if(!user){
+            res.status(400).send({error:"Invalid Token"});
+        }
+        return res.status(200).send(user)
+    }catch(e){
+        res.status(400).send({error:"Invalid Token"});
     }
 }
 
@@ -186,10 +206,12 @@ const getUsersController = async (req, res) => {
     }
 }
 
-module.exports.registerController = registerController;
-module.exports.loginController = loginController;
-module.exports.getUserController = getUserController;
-module.exports.updateUserController = updateUserController;
-module.exports.resetPasswordController = resetPasswordController;
-module.exports.getUsersController = getUsersController;
 module.exports.updatePermissionController = updatePermissionController;
+module.exports.getTokenInformationController = getTokenInformationController
+module.exports.registerController = registerController
+module.exports.loginController = loginController
+module.exports.getUserController = getUserController
+module.exports.updateUserController = updateUserController
+module.exports.resetPasswordController = resetPasswordController
+module.exports.getUsersController = getUsersController
+
