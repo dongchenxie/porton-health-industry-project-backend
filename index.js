@@ -21,7 +21,6 @@ const swaggerOptions={
     apis:["./routes/auth.js"]
 }
 
-
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded());

@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 
 const { registerValidation, loginValidation } = require("../component/validation")
 
-const { registerController, loginController, getUserController, updateUserController, resetPasswordController, updatePermissionController } = require("../controller/authController")
+const { registerController, loginController, getUserController, updateUserController, resetPasswordController, updatePermissionController, getTokenInformationController } = require("../controller/authController")
 
 //validationns:
 //Register
