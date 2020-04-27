@@ -34,14 +34,8 @@ router.put("/:userId", async (req, res) => {
 router.put("/passwordReset/:userId", async (req, res) => {
     return await resetPasswordController(req, res)
 })
-<<<<<<< HEAD
-//getUserById
-router.get('/:userId', async (req, res) => {
-    return await getUserController(req, res)
-=======
 
 router.get("/readToken/:token", async (req, res) => {
     return await getTokenInformationController(req, res)
->>>>>>> master
 })
 module.exports = router
