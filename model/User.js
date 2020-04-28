@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
     isEnabled: {
         type: Boolean,
         default: true
+    },
+    clinic: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Clinic'
     }
 })
 module.exports = mongoose.model("User", userSchema)
