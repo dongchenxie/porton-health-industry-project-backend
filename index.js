@@ -6,8 +6,8 @@ const dotenv =require("dotenv")
 const postRoute =require("./routes/post")
 const cors = require('cors')
 const usersRoute = require("./routes/users")
-const User = require('./model/User')
-const Clinic = require('./model/Clinic')
+// const User = require('./model/User')
+// const Clinic = require('./model/Clinic')
 
 const swaggerOptions={
     swaggerDefinition: {

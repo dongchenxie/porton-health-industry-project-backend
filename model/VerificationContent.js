@@ -2,22 +2,28 @@ const mongoose = require("mongoose")
 
 const verificationContentSchema = new mongoose.Schema({
     firstName: {
-        type: String,
+        type: Boolean,
+        default: true
     },
     lastName: {
-        type: String
+        type: Boolean,
+        default: true
     },
     phoneNumber: {
-        type: String,
+        type: Boolean,
+        default: false
     },
     careCardNumber: {
-        type: String,
+        type: Boolean,
+        default: false
     },
     phoneNumberLast4: {
-        type: String
+        type: Boolean,
+        default: false
     },
     careCardLast4: {
-        type: String
+        type: Boolean,
+        default: false
     }
 })
 

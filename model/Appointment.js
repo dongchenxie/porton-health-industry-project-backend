@@ -8,7 +8,7 @@ const appointmentSchema = new mongoose.Schema({
         type: String
     },
     reason: {
-        type: String,
+        type: String
     },
     status: {
         type: String,
