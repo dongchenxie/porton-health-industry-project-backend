@@ -171,10 +171,10 @@ const getUsersController = async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
-    const { page = 1, perPage = 10, sort_by = 'date', search } = req.query
+    const { page = 1, perPage = 10, sort_by = 'date.asc', search } = req.query
     let searchString = new RegExp(search, "i")
     let sorter = {}
-    sorter[sort_by] = 1
+    sorter[sort_by.split('.')[0]] = sort_by.indexOf('.asc') != -1 ? 1 : -1
     try {
         const users = await User
             .find({
