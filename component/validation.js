@@ -25,7 +25,8 @@ const updateValidation = (data) => {
         firstName: Joi.string().min(1).max(255).required(),
         lastName: Joi.string().min(1).max(255).required(),
         email: Joi.string().min(5).required().email(),
-        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).required().messages({ "string.pattern.base": "Access denied." })
+        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).required().messages({ "string.pattern.base": "Access denied." }),
+        clinic: Joi.string()
     })
     return schema.validate(data)
 }
