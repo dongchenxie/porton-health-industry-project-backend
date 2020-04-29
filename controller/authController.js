@@ -89,12 +89,33 @@ const updateUserController = async (req, res) => {
     if (user && user._id != userId) {
         return res.status(400).send({ error: "Email already exists." })
     }
+    // Update user to clinc
+    try {
+        const user = await User.findById(userId)
+        if (user.clinic && user.clinic != req.body.clinic) {
+            const oldClinic = await Clinic.findById(user.clinic)
+            oldClinic.users.pull(user._id)
+            oldClinic.save()
+            const newClinic = await Clinic.findById(req.body.clinic)
+            newClinic.users.push(user._id)
+            newClinic.save()
+        } else if (!user.clinic && req.body.clinic) {
+            const newClinic = await Clinic.findById(req.body.clinic)
+            newClinic.users.push(user._id)
+            newClinic.save()
+        }
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Failed to update user in clinic." })
+    }
+    // Update clinic to user
     try {
         await User.findByIdAndUpdate(userId, {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
-            role: req.body.role
+            role: req.body.role,
+            clinic: req.body.clinic
         })
         return res.status(200).send()
     } catch (err) {
