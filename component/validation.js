@@ -38,6 +38,13 @@ const validateTerminal = (data) => {
     return schema.validate(data)
 }
 
+const validateTerminal = (data) => {
+    const schema = Joi.object({
+        isEnabled: Joi.boolean().required()
+    })
+    return schema.validate(data)
+}
+
 const resetPasswordValidation = (data) => {
     const schema = Joi.object({
         password: Joi.string().min(6).required()
