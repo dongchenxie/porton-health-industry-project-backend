@@ -39,12 +39,10 @@ const resetPasswordValidation = (data) => {
 
 const getUsersValidation = (data) => {
     const schema = Joi.object({
-        firstName: Joi.string().min(1).max(255),
-        lastName: Joi.string().min(1).max(255),
-        email: Joi.string().min(5).email(),
-        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).messages({ "string.pattern.base": "Access denied." }),
+        search: Joi.string().min(1).max(255),
+        perPage: Joi.number().integer().min(1),
         sort_by: Joi.string().pattern(/^(firstName|lastName|email|date|role)$/).messages({ "string.pattern.base": "Sorter is undefined." }),
-        page: Joi.number().integer().min(1)
+        page: Joi.number().integer().min(1),
     })
     return schema.validate(data)
 }
