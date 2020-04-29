@@ -31,12 +31,6 @@ const updateValidation = (data) => {
     return schema.validate(data)
 }
 
-const deleteTerminal = (data) => {
-    const schema = Joi.object({
-    role: Joi.string().pattern(/^(ENABLED|DISABLED)$/).required().messages({ "string.pattern.base": "Terminal Does Not Exist" }),
-    })
-    return schema.validate(data)
-}
 
 const resetPasswordValidation = (data) => {
     const schema = Joi.object({
@@ -68,4 +62,3 @@ module.exports.updateValidation = updateValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
 module.exports.getUsersValidation = getUsersValidation;
 module.exports.updatePermission = updatePermission;
-module.exports.deleteTerminal = deleteTerminal;
