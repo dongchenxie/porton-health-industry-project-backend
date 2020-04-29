@@ -6,6 +6,7 @@ const dotenv =require("dotenv")
 const postRoute =require("./routes/post")
 const cors = require('cors')
 const usersRoute = require("./routes/users")
+const clinicsRoute = require("./routes/clinics")
 // const User = require('./model/User')
 // const Clinic = require('./model/Clinic')
 
@@ -37,6 +38,7 @@ mongoose.connect(process.env.DB_CONNECTION,
 app.use("/api/user", authRoute)
 app.use("/api/posts", postRoute)
 app.use("/api/users", usersRoute)
+app.use("/api/clinics", clinicsRoute)
 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');

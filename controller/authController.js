@@ -1,4 +1,5 @@
 const User = require("../model/User")
+const Clinic = require("../model/Clinic")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission } = require("../component/validation")
@@ -214,6 +215,15 @@ const getUsersController = async (req, res) => {
     }
 }
 
+const getClinicsController = async (req, res) => {
+    try {
+        const clinics = await Clinic.find()
+        return res.status(200).send(clinics)
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to get clinics." })
+    }
+}
+
 module.exports.updatePermissionController = updatePermissionController;
 module.exports.getTokenInformationController = getTokenInformationController
 module.exports.registerController = registerController
@@ -222,4 +232,4 @@ module.exports.getUserController = getUserController
 module.exports.updateUserController = updateUserController
 module.exports.resetPasswordController = resetPasswordController
 module.exports.getUsersController = getUsersController
-
+module.exports.getClinicsController = getClinicsController
