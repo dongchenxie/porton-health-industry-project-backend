@@ -7,7 +7,7 @@ const registerController = async (req, res) => {
     //validation
     const { error } = registerValidation(req.body)
     if (error) {
-        return res.status(400).send({ error:error.details[0].message})
+        return res.status(400).send({ error: error.details[0].message })
     }
     //check if email exists in db
     const emailExist = await User.findOne({ email: req.body.email })//mongoose query
@@ -57,8 +57,8 @@ const loginController = async (req, res) => {
     console.log(exprieDate)
     const token = jwt.sign({ _id: user.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
     console.log({ token: token, role: user.role })
-    user.password=null
-    return res.header('auth-token', token).send({ token: token, role: user.role,user:user})
+    user.password = null
+    return res.header('auth-token', token).send({ token: token, role: user.role, user: user })
 }
 
 const getUserController = async (req, res) => {
@@ -141,7 +141,7 @@ const updatePermissionController = async (req, res) => {
 
     try {
         await User.findByIdAndUpdate(userId, {
-           isEnabled: req.body.isEnabled
+            isEnabled: req.body.isEnabled
         })
         return res.status(200).send()
     } catch (err) {
@@ -150,19 +150,19 @@ const updatePermissionController = async (req, res) => {
 }
 
 
-const getTokenInformationController= async (req, res)=>{
+const getTokenInformationController = async (req, res) => {
     const { token } = req.params
     console.log(token)
-    if(!token) return res.status(401).send({error:"Missing auth token"})
-    try{
-        const verified = jwt.verify(token,process.env.TOKEN_SECRET);
-        const user= await User.findOne({_id:verified._id}).select("-password -__v")//mongoose query
-        if(!user){
-            res.status(400).send({error:"Invalid Token"});
+    if (!token) return res.status(401).send({ error: "Missing auth token" })
+    try {
+        const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+        const user = await User.findOne({ _id: verified._id }).select("-password -__v")//mongoose query
+        if (!user) {
+            res.status(400).send({ error: "Invalid Token" });
         }
         return res.status(200).send(user)
-    }catch(e){
-        res.status(400).send({error:"Invalid Token"});
+    } catch (e) {
+        res.status(400).send({ error: "Invalid Token" });
     }
 }
 
@@ -171,27 +171,35 @@ const getUsersController = async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
-    const { page = 1 } = req.query
-    const perPage = 10
-    let query = {}
+    const { page = 1, perPage = 10, sort_by = 'date', search } = req.query
+    let searchString = new RegExp(search, "i")
     let sorter = {}
-    for (let key in req.query) {
-        if (key) {
-            if (key != "page" && key != "sort_by") {
-                query[key] = new RegExp('^' + req.query[key] + '$', "i")
-            } else if (key = "sort_by") {
-                sorter[req.query[key]] = 1
-            }
-        }
-    }
+    sorter[sort_by] = 1
     try {
-        const users = await User.find(query)
+        const users = await User
+            .find({
+                $or: [
+                    { firstName: searchString },
+                    { lastName: searchString },
+                    { email: searchString },
+                    { role: searchString }
+                ]
+            })
             .select("-password -__v")
-            .limit(perPage)
+            .limit(Number(perPage))
             .skip((page - 1) * perPage)
             .sort(sorter)
             .exec()
-        const total = await User.find(query).countDocuments()
+        const total = await User
+            .find({
+                $or: [
+                    { firstName: searchString },
+                    { lastName: searchString },
+                    { email: searchString },
+                    { role: searchString }
+                ]
+            })
+            .countDocuments()
         return res.status(200).send({
             users,
             totalResults: total,
