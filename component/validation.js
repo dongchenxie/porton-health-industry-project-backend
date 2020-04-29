@@ -41,7 +41,7 @@ const getUsersValidation = (data) => {
     const schema = Joi.object({
         search: Joi.string().min(1).max(255),
         perPage: Joi.number().integer().min(1),
-        sort_by: Joi.string().pattern(/^(firstName|lastName|email|date|role)$/).messages({ "string.pattern.base": "Sorter is undefined." }),
+        sort_by: Joi.string().pattern(/^(firstName.asc|firstName.desc|lastName.asc|lastName.desc|email.asc|email.desc|date.asc|date.desc|role.asc|role.desc)$/).messages({ "string.pattern.base": "Sorter is undefined." }),
         page: Joi.number().integer().min(1),
     })
     return schema.validate(data)
