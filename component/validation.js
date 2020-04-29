@@ -25,7 +25,8 @@ const updateValidation = (data) => {
         firstName: Joi.string().min(1).max(255).required(),
         lastName: Joi.string().min(1).max(255).required(),
         email: Joi.string().min(5).required().email(),
-        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).required().messages({ "string.pattern.base": "Access denied." })
+        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).required().messages({ "string.pattern.base": "Access denied." }),
+        clinic: Joi.string()
     })
     return schema.validate(data)
 }
@@ -39,12 +40,10 @@ const resetPasswordValidation = (data) => {
 
 const getUsersValidation = (data) => {
     const schema = Joi.object({
-        firstName: Joi.string().min(1).max(255),
-        lastName: Joi.string().min(1).max(255),
-        email: Joi.string().min(5).email(),
-        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).messages({ "string.pattern.base": "Access denied." }),
-        sort_by: Joi.string().pattern(/^(firstName|lastName|email|date|role)$/).messages({ "string.pattern.base": "Sorter is undefined." }),
-        page: Joi.number().integer().min(1)
+        search: Joi.string().min(1).max(255),
+        perPage: Joi.number().integer().min(1),
+        sort_by: Joi.string().pattern(/^(firstName.asc|firstName.desc|lastName.asc|lastName.desc|email.asc|email.desc|date.asc|date.desc|role.asc|role.desc)$/).messages({ "string.pattern.base": "Sorter is undefined." }),
+        page: Joi.number().integer().min(1),
     })
     return schema.validate(data)
 }

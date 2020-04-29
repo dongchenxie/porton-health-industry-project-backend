@@ -1,4 +1,5 @@
 const User = require("../model/User")
+const Clinic = require("../model/Clinic")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission } = require("../component/validation")
@@ -7,7 +8,7 @@ const registerController = async (req, res) => {
     //validation
     const { error } = registerValidation(req.body)
     if (error) {
-        return res.status(400).send({ error:error.details[0].message})
+        return res.status(400).send({ error: error.details[0].message })
     }
     //check if email exists in db
     const emailExist = await User.findOne({ email: req.body.email })//mongoose query
@@ -59,8 +60,8 @@ const loginController = async (req, res) => {
     console.log(exprieDate)
     const token = jwt.sign({ _id: user.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
     console.log({ token: token, role: user.role })
-    user.password=null
-    return res.header('auth-token', token).send({ token: token, role: user.role,user:user})
+    user.password = null
+    return res.header('auth-token', token).send({ token: token, role: user.role, user: user })
 }
 
 const getUserController = async (req, res) => {
@@ -90,12 +91,33 @@ const updateUserController = async (req, res) => {
     if (user && user._id != userId) {
         return res.status(400).send({ error: "Email already exists." })
     }
+    // Update user to clinc
+    try {
+        const user = await User.findById(userId)
+        if (user.clinic && user.clinic != req.body.clinic) {
+            const oldClinic = await Clinic.findById(user.clinic)
+            oldClinic.users.pull(user._id)
+            oldClinic.save()
+            const newClinic = await Clinic.findById(req.body.clinic)
+            newClinic.users.push(user._id)
+            newClinic.save()
+        } else if (!user.clinic && req.body.clinic) {
+            const newClinic = await Clinic.findById(req.body.clinic)
+            newClinic.users.push(user._id)
+            newClinic.save()
+        }
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Failed to update user in clinic." })
+    }
+    // Update clinic to user
     try {
         await User.findByIdAndUpdate(userId, {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
-            role: req.body.role
+            role: req.body.role,
+            clinic: req.body.clinic
         })
         return res.status(200).send()
     } catch (err) {
@@ -143,7 +165,7 @@ const updatePermissionController = async (req, res) => {
 
     try {
         await User.findByIdAndUpdate(userId, {
-           isEnabled: req.body.isEnabled
+            isEnabled: req.body.isEnabled
         })
         return res.status(200).send()
     } catch (err) {
@@ -152,19 +174,19 @@ const updatePermissionController = async (req, res) => {
 }
 
 
-const getTokenInformationController= async (req, res)=>{
+const getTokenInformationController = async (req, res) => {
     const { token } = req.params
     console.log(token)
-    if(!token) return res.status(401).send({error:"Missing auth token"})
-    try{
-        const verified = jwt.verify(token,process.env.TOKEN_SECRET);
-        const user= await User.findOne({_id:verified._id}).select("-password -__v")//mongoose query
-        if(!user){
-            res.status(400).send({error:"Invalid Token"});
+    if (!token) return res.status(401).send({ error: "Missing auth token" })
+    try {
+        const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+        const user = await User.findOne({ _id: verified._id }).select("-password -__v")//mongoose query
+        if (!user) {
+            res.status(400).send({ error: "Invalid Token" });
         }
         return res.status(200).send(user)
-    }catch(e){
-        res.status(400).send({error:"Invalid Token"});
+    } catch (e) {
+        res.status(400).send({ error: "Invalid Token" });
     }
 }
 
@@ -173,27 +195,35 @@ const getUsersController = async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
-    const { page = 1 } = req.query
-    const perPage = 10
-    let query = {}
+    const { page = 1, perPage = 10, sort_by = 'date.asc', search } = req.query
+    let searchString = new RegExp(search, "i")
     let sorter = {}
-    for (let key in req.query) {
-        if (key) {
-            if (key != "page" && key != "sort_by") {
-                query[key] = new RegExp('^' + req.query[key] + '$', "i")
-            } else if (key = "sort_by") {
-                sorter[req.query[key]] = 1
-            }
-        }
-    }
+    sorter[sort_by.split('.')[0]] = sort_by.indexOf('.asc') != -1 ? 1 : -1
     try {
-        const users = await User.find(query)
+        const users = await User
+            .find({
+                $or: [
+                    { firstName: searchString },
+                    { lastName: searchString },
+                    { email: searchString },
+                    { role: searchString }
+                ]
+            })
             .select("-password -__v")
-            .limit(perPage)
+            .limit(Number(perPage))
             .skip((page - 1) * perPage)
             .sort(sorter)
             .exec()
-        const total = await User.find(query).countDocuments()
+        const total = await User
+            .find({
+                $or: [
+                    { firstName: searchString },
+                    { lastName: searchString },
+                    { email: searchString },
+                    { role: searchString }
+                ]
+            })
+            .countDocuments()
         return res.status(200).send({
             users,
             totalResults: total,
@@ -208,6 +238,15 @@ const getUsersController = async (req, res) => {
     }
 }
 
+const getClinicsController = async (req, res) => {
+    try {
+        const clinics = await Clinic.find()
+        return res.status(200).send(clinics)
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to get clinics." })
+    }
+}
+
 module.exports.updatePermissionController = updatePermissionController;
 module.exports.getTokenInformationController = getTokenInformationController
 module.exports.registerController = registerController
@@ -216,3 +255,4 @@ module.exports.getUserController = getUserController
 module.exports.updateUserController = updateUserController
 module.exports.resetPasswordController = resetPasswordController
 module.exports.getUsersController = getUsersController
+module.exports.getClinicsController = getClinicsController
