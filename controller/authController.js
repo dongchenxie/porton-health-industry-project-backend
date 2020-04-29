@@ -1,7 +1,8 @@
 const User = require("../model/User")
+const Terminal = require("../model/Terminal")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission } = require("../component/validation")
+const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission, deleteTerminal } = require("../component/validation")
 
 const registerController = async (req, res) => {
     //validation
@@ -214,6 +215,30 @@ const getUsersController = async (req, res) => {
     }
 }
 
+
+const deleteTerminalController = async (req, res) => {
+    const { error } = deleteTerminal(req.body)
+
+    if (error) {
+        return res.status(400).send(error.details[0].message)
+    }
+    const { terminalId } = req.params
+    try {
+        await Terminal.findById(terminalId)
+    } catch (err) {
+        return res.status(400).send({ error: "Invalid terminal Id." })
+    }
+
+    try {
+        await Terminal.findByIdAndUpdate(terminalId, {
+            isEnabled: req.body.isEnabled
+        })
+        return res.status(200).send()
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to update terminal status." })
+    }
+}
+
 module.exports.updatePermissionController = updatePermissionController;
 module.exports.getTokenInformationController = getTokenInformationController
 module.exports.registerController = registerController
@@ -222,4 +247,4 @@ module.exports.getUserController = getUserController
 module.exports.updateUserController = updateUserController
 module.exports.resetPasswordController = resetPasswordController
 module.exports.getUsersController = getUsersController
-
+module.exports.deleteTerminalController = deleteTerminalController;

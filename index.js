@@ -6,6 +6,7 @@ const dotenv =require("dotenv")
 const postRoute =require("./routes/post")
 const cors = require('cors')
 const usersRoute = require("./routes/users")
+const terminalsRoute = require("./routes/terminals")
 // const User = require('./model/User')
 // const Clinic = require('./model/Clinic')
 
