@@ -1,4 +1,5 @@
 const Joi = require("@hapi/joi")
+
 //register validation
 const registerValidation = (data) => {
     const schema = Joi.object({
@@ -10,6 +11,7 @@ const registerValidation = (data) => {
     })
     return schema.validate(data)
 }
+
 const loginValidation = (data) => {
     const schema = Joi.object({
         email: Joi.string().min(4).required().email(),
@@ -17,6 +19,7 @@ const loginValidation = (data) => {
     })
     return schema.validate(data)
 }
+
 const updateValidation = (data) => {
     const schema = Joi.object({
         firstName: Joi.string().min(1).max(255).required(),
@@ -26,12 +29,14 @@ const updateValidation = (data) => {
     })
     return schema.validate(data)
 }
+
 const resetPasswordValidation = (data) => {
     const schema = Joi.object({
         password: Joi.string().min(6).required()
     })
     return schema.validate(data)
 }
+
 const getUsersValidation = (data) => {
     const schema = Joi.object({
         firstName: Joi.string().min(1).max(255),
@@ -43,8 +48,17 @@ const getUsersValidation = (data) => {
     })
     return schema.validate(data)
 }
-module.exports.registerValidation = registerValidation
-module.exports.loginValidation = loginValidation
-module.exports.updateValidation = updateValidation
-module.exports.resetPasswordValidation = resetPasswordValidation
-module.exports.getUsersValidation = getUsersValidation
+
+const updatePermission = data => {
+    const schema = Joi.object({
+        isEnabled: Joi.boolean().required()
+    })
+    return schema.validate(data)
+}
+
+module.exports.registerValidation = registerValidation;
+module.exports.loginValidation = loginValidation;
+module.exports.updateValidation = updateValidation;
+module.exports.resetPasswordValidation = resetPasswordValidation;
+module.exports.getUsersValidation = getUsersValidation;
+module.exports.updatePermission = updatePermission;
