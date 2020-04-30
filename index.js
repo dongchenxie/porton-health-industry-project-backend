@@ -8,7 +8,6 @@ const cors = require('cors')
 const usersRoute = require("./routes/users")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
-const terminalRoute = require("./routes/terminal")
 
 const swaggerOptions={
     swaggerDefinition: {
@@ -40,7 +39,6 @@ app.use("/api/posts", postRoute)
 app.use("/api/users", usersRoute)
 app.use("/api/clinics", clinicsRoute)
 app.use("/api/client", clientRoute)
-app.use("/api/terminal", terminalRoute)
 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
