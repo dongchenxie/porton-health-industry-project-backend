@@ -2,7 +2,7 @@ const User = require("../model/User")
 const Clinic = require("../model/Clinic")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission } = require("../component/validation")
+const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission, deleteTerminal } = require("../component/validation")
 
 const registerController = async (req, res) => {
     //validation
