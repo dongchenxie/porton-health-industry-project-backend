@@ -23,11 +23,7 @@ const terminalSchema = new mongoose.Schema({
     clinic: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Clinic'
-    },
-    isEnabled: {
-        type: Boolean,
-        default: true
-    },
+    }
 })
 
 module.exports = mongoose.model("Terminal", terminalSchema)

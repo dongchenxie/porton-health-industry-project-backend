@@ -31,16 +31,9 @@ const updateValidation = (data) => {
     return schema.validate(data)
 }
 
-const validateTerminal = (data) => {
-    const schema = Joi.object({
-        isEnabled: Joi.boolean().required()
-    })
-    return schema.validate(data)
-}
-
 const deleteTerminal = (data) => {
     const schema = Joi.object({
-        isEnabled: Joi.boolean().required()
+    role: Joi.string().pattern(/^(ENABLED|DISABLED)$/).required().messages({ "string.pattern.base": "Terminal Does Not Exist" }),
     })
     return schema.validate(data)
 }
