@@ -190,7 +190,7 @@
       ],
       "get": {
         "tags": [
-          "Terminals"
+          "Terminal"
         ],
         "summary": "Get terminal with given id (under construction)",
         "responses": {
@@ -202,7 +202,20 @@
           }
         }
       },
-
+      "delete": {
+        "summary": "Delete terminal with given id (under construction)",
+        "tags": [
+          "Terminal"
+        ],
+        "responses": {
+          "200": {
+            "description": "Terminal is deleted",
+            "schema": {
+              "$ref": "#/definitions/Terminal"
+            }
+          }
+        }
+      },
       "put": {
         "summary": "Update terminal with given id (under construction)",
         "tags": [
@@ -212,9 +225,9 @@
           {
             "name": "terminal",
             "in": "body",
-            "description": "User with new values of properties",
+            "description": "Terminal with new values of properties",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/Terminal"
             }
           }
         ],
@@ -222,7 +235,7 @@
           "200": {
             "description": "Terminal is updated",
             "schema": {
-              "$ref": "#/definitions/terminal"
+              "$ref": "#/definitions/Terminal"
             }
           }
         }
