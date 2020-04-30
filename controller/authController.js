@@ -1,8 +1,9 @@
 const User = require("../model/User")
 const Clinic = require("../model/Clinic")
+const Terminal = require("../model/Terminal")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission, deleteTerminal } = require("../component/validation")
+const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission} = require("../component/validation")
 
 const registerController = async (req, res) => {
     //validation
@@ -245,6 +246,15 @@ const getClinicsController = async (req, res) => {
     }
 }
 
+const getTerminalsController = async (req, res) => {
+    try {
+        const terminals = await Terminal.find()
+        return res.status(200).send(terminals)
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to get terminals." })
+    }
+}
+
 module.exports.updatePermissionController = updatePermissionController;
 module.exports.getTokenInformationController = getTokenInformationController
 module.exports.registerController = registerController
@@ -254,3 +264,4 @@ module.exports.updateUserController = updateUserController
 module.exports.resetPasswordController = resetPasswordController
 module.exports.getUsersController = getUsersController
 module.exports.getClinicsController = getClinicsController
+module.exports.getTerminalsController = getTerminalsController
