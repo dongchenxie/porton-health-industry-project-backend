@@ -95,14 +95,14 @@ const updateUserController = async (req, res) => {
         if (user.clinic && user.clinic != req.body.clinic) {
             const oldClinic = await Clinic.findById(user.clinic)
             oldClinic.users.pull(user._id)
-            oldClinic.save()
+            await oldClinic.save()
             const newClinic = await Clinic.findById(req.body.clinic)
             newClinic.users.push(user._id)
             newClinic.save()
         } else if (!user.clinic && req.body.clinic) {
             const newClinic = await Clinic.findById(req.body.clinic)
             newClinic.users.push(user._id)
-            newClinic.save()
+            await newClinic.save()
         }
     } catch (err) {
         console.log(err)
