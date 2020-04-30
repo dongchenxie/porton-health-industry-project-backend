@@ -238,7 +238,7 @@ const getUsersController = async (req, res) => {
 
 const getClinicsController = async (req, res) => {
     try {
-        const clinics = await Clinic.find()
+        const clinics = await Clinic.find().select("-__v")
         return res.status(200).send(clinics)
     } catch (err) {
         return res.status(400).send({ error: "Failed to get clinics." })

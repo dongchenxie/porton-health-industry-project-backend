@@ -24,8 +24,8 @@ const updateValidation = (data) => {
     const schema = Joi.object({
         firstName: Joi.string().min(1).max(255).required(),
         lastName: Joi.string().min(1).max(255).required(),
-        email: Joi.string().min(5).required().email(),
-        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).required().messages({ "string.pattern.base": "Access denied." }),
+        email: Joi.string().min(5).required().email().required(),
+        role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).required().messages({ "string.pattern.base": "Access denied." }).required(),
         clinic: Joi.string()
     })
     return schema.validate(data)
@@ -55,9 +55,23 @@ const updatePermission = data => {
     return schema.validate(data)
 }
 
+const updateAppointment = data => {
+    const schema = Joi.object({
+        appointmentTime: Joi.date().required(),
+        doctorName: Joi.string().min(1).max(255).required(),
+        reason: Joi.string().min(1).max(255).required(),
+        status: Joi.string().pattern(/^(NOT_SHOW|PENDING|CHECK_IN)$/).messages({ "string.pattern.base": "Status is undefined." }).required(),
+        comment: Joi.string().min(1).max(255).required(),
+        clinic: Joi.string().min(1).max(255).required(),
+        patient: Joi.string().min(1).max(255).required()
+    })
+    return schema.validate(data)
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateValidation = updateValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
 module.exports.getUsersValidation = getUsersValidation;
 module.exports.updatePermission = updatePermission;
+module.exports.updateAppointment = updateAppointment;
