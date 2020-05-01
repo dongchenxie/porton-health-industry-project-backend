@@ -125,43 +125,47 @@ const getAppointments = async (req, res) => {
                         ]
                     }
                 },
-                {
-                    $limit: _perPage
-                },
-                {
-                    $skip: (_page - 1) * _perPage
-                },
+                { '$facet'    : {
+                    metadata: [ { $count: "totalResults" }, { $addFields: { page: _page  } } ],
+                    data: [ { $skip: (_page-1)*_perPage }, { $limit: _perPage } ] // add projection here wish you re-shape the docs
+                } },
                 {
                     $sort: sorter
                 },
-                {
-                    $group: {
-                        _id: null,
-                        total: { $sum: 1 },
-                        results: { $push: "$$ROOT" }
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        total: "$total",
-                        results: 1
-                    }
-                }
+                // {
+                //     $group: {
+                //         _id: null,
+                //         total: { $sum: 1 },
+                //         results: { $push: "$$ROOT" }
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         _id: 0,
+                //         total: "$total",
+                //         results: 1
+                //     }
+                // }
             ])
         
         appointments = appointments[0]
-        const total = appointments.total
-
-        return res.status(200).send({
-            appointments,
-            totalResults: total,
+        const total = appointments?appointments.total?appointments.total:0:0
+        let _totalResults=appointments.metadata[0].totalResults
+        console.log(appointments.metadata[0].totalResults)
+        appointments.metadata={ 
+            totalResults:_totalResults,
+            page:_page,
             perPage: _perPage,
-            totalPages: Math.ceil(total / _perPage),
+            totalPages: Math.ceil(_totalResults / _perPage),
             currentPage: _page,
-            nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
+         
+            nextPage: _page + 1 > Math.ceil(_totalResults / _perPage) ? null : _page + 1,
             prevPage: _page - 1 <= 0 ? null : _page - 1
-        })
+        }
+        return res.status(200).send(
+            appointments
+           
+        )
     } catch (err) {
         console.log(err)
         return res.status(400).send({ error: "Failed to get appointments." })
