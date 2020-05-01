@@ -1,6 +1,7 @@
 const Appointment = require('../model/Appointment')
 const Clinic = require('../model/Clinic')
 const Patient = require('../model/Patient')
+// const User = require('../model/User')
 const { updateAppointmentValidation, getAppointmentsValidation } = require('../component/validation')
 
 const getAppointmentById = async (req, res) => {
@@ -86,79 +87,80 @@ const getAppointments = async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
+    // const userId = req.user._id
     const { page = 1, perPage = 10, sort_by = 'appointmentTime.asc', search, start_date = Date.now, end_date = Date.now } = req.query
-    let searchString = new RegExp(search, "i")
+    const _page = Number(page)
+    const _perPage = Number(perPage)
+    const searchString = new RegExp(search, "i")
     let sorter = {}
     sorter[sort_by.split('.')[0]] = sort_by.indexOf('.asc') != -1 ? 1 : -1
-    try {
-        const appointments = await Appointment
-            .find({
-                // $or: [
-                //     { doctorName: searchString },
-                //     { reason: searchString },
-                //     { comment: searchString }
-                // ],
-                // $and: [
-                //     { appoimentTime: { $gte: start_date, $lte: end_date } },
-                // ]
-            })
-            .select("-__v")
-            .populate(
-                "patient",
-                "-__v",
-                {
-                    $or: [
-                        { firstName: searchString },
-                        { lastName: searchString },
-                        { careCardNumber: searchString },
-                        { phoneNumber: searchString },
-                        { email: searchString }
-                    ]
-                },
-                { sort: sorter }
-            )
-            .limit(Number(perPage))
-            .skip((page - 1) * perPage)
-            .sort(sorter)
-            .exec()
 
-        const total = await Appointment
-            .find({
-                // $or: [
-                //     { doctorName: searchString },
-                //     { reason: searchString },
-                //     { comment: searchString }
-                // ],
-                // $and: [
-                //     { appoimentTime: { $gte: start_date, $lte: end_date } },
-                // ]
-            })
-            .populate(
-                "patient",
-                null,
+    try {
+        // const user = await User.findById(userId)
+        let appointments = await Appointment
+            .aggregate([
                 {
-                    $or: [
-                        { firstName: searchString },
-                        { lastName: searchString },
-                        { age: searchString },
-                        { careCardNumber: searchString },
-                        { phoneNumber: searchString },
-                        { email: searchString },
-                        { comment: searchString }
-                    ]
+                    $lookup: {
+                        from: Patient.collection.name,
+                        localField: "patient",
+                        foreignField: "_id",
+                        as: "patient"
+                    }
                 },
-                null
-            )
-            .countDocuments()
+                {
+                    $match: {
+                        // $and: [
+                        //     { clinic: user.clinic },
+                        //     { appoimentTime: { $gte: start_date, $lte: end_date } },
+                        // ],
+                        $or: [
+                            { doctorName: searchString },
+                            { reason: searchString },
+                            { comment: searchString },
+                            { "patient.firstName": searchString },
+                            { "patient.lastName": searchString },
+                            { "patient.careCardNumber": searchString },
+                            { "patient.phoneNumber": searchString },
+                            { "patient.email": searchString }
+                        ]
+                    }
+                },
+                {
+                    $limit: _perPage
+                },
+                {
+                    $skip: (_page - 1) * _perPage
+                },
+                {
+                    $sort: sorter
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: 1 },
+                        results: { $push: "$$ROOT" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        total: "$total",
+                        results: 1
+                    }
+                }
+            ])
+        
+        appointments = appointments[0]
+        const total = appointments.total
 
         return res.status(200).send({
             appointments,
             totalResults: total,
-            perPage: perPage,
-            totalPages: Math.ceil(total / perPage),
-            currentPage: page,
-            nextPage: page + 1 >= Math.ceil(total / perPage) ? null : page + 1,
-            prevPage: page - 1 <= 0 ? null : page - 1
+            perPage: _perPage,
+            totalPages: Math.ceil(total / _perPage),
+            currentPage: _page,
+            nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
+            prevPage: _page - 1 <= 0 ? null : _page - 1
         })
     } catch (err) {
         console.log(err)
