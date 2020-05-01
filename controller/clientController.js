@@ -154,7 +154,7 @@ const getAppointments = async (req, res) => {
         console.log(appointments.metadata[0].totalResults)
         appointments.metadata={ 
             totalResults:_totalResults,
-            page:_page,
+          
             perPage: _perPage,
             totalPages: Math.ceil(_totalResults / _perPage),
             currentPage: _page,
