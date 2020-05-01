@@ -193,6 +193,7 @@ const getUsersController = async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
+    
     const { page = 1, perPage = 10, sort_by = 'date.asc', search } = req.query
     let searchString = new RegExp(search, "i")
     let sorter = {}
@@ -222,6 +223,7 @@ const getUsersController = async (req, res) => {
                 ]
             })
             .countDocuments()
+            
         return res.status(200).send({
             users,
             totalResults: total,
@@ -231,6 +233,7 @@ const getUsersController = async (req, res) => {
             nextPage: page + 1 >= Math.ceil(total / perPage) ? null : page + 1,
             prevPage: page - 1 <= 0 ? null : page - 1
         })
+        
     } catch (err) {
         return res.status(400).send({ error: "Failed to get users." })
     }
