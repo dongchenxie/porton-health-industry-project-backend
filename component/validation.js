@@ -73,7 +73,7 @@ const getAppointmentsValidation = data => {
         page: Joi.number().integer().min(1),
         perPage: Joi.number().integer().min(1),
         search: Joi.string().min(1).max(255),
-        sort_by: Joi.string().pattern(/^(doctorName.asc|doctorName.desc|appointmentTime.asc|appointmentTime.desc|firstName.asc|firstName.desc|lastName.asc|lastName.desc)$/).messages({ "string.pattern.base": "Sorter is undefined." }),
+        sort_by: Joi.string().pattern(/^(doctorName.asc|doctorName.desc|appointmentTime.asc|appointmentTime.desc|patient.firstName.asc|patient.firstName.desc|patient.lastName.asc|patient.lastName.desc)$/).messages({ "string.pattern.base": "Sorter is undefined." }),
         start_date: Joi.date(),
         end_date: Joi.date()
     })

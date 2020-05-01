@@ -1,7 +1,7 @@
 const Appointment = require('../model/Appointment')
 const Clinic = require('../model/Clinic')
 const Patient = require('../model/Patient')
-// const User = require('../model/User')
+const User = require('../model/User')
 const { updateAppointmentValidation, getAppointmentsValidation } = require('../component/validation')
 
 const getAppointmentById = async (req, res) => {
@@ -68,7 +68,7 @@ const updateAppointmentById = async (req, res) => {
     }
     // Update clinic and patient in appointment
     try {
-        appointment.appoimentTime = req.body.appoimentTime
+        appointment.appointmentTime = req.body.appointmentTime
         appointment.doctorName = req.body.doctorName
         appointment.reason = req.body.reason
         appointment.status = req.body.status
@@ -88,13 +88,15 @@ const getAppointments = async (req, res) => {
         return res.status(400).send(error.details[0].message)
     }
     // const userId = req.user._id
-    const { page = 1, perPage = 10, sort_by = 'appointmentTime.asc', search, start_date = Date.now, end_date = Date.now } = req.query
+    const { page = 1, perPage = 10, sort_by = 'appointmentTime.asc', search, start_date, end_date } = req.query
     const _page = Number(page)
     const _perPage = Number(perPage)
+    const startDate = start_date ? new Date(start_date) : Date.now
+    const endDate = end_date ? new Date(end_date) : Date.now
     const searchString = new RegExp(search, "i")
     let sorter = {}
-   // sorter[sort_by.split('.')[0]] = sort_by.indexOf('.asc') != -1 ? 1 : -1
-    sorter["patient.firstName"]=-1
+    sorter[sort_by.substring(0, sort_by.lastIndexOf('.'))] = sort_by.indexOf('.asc') != -1 ? 1 : -1
+
     try {
         // const user = await User.findById(userId)
         let appointments = await Appointment
@@ -109,10 +111,8 @@ const getAppointments = async (req, res) => {
                 },
                 {
                     $match: {
-                        // $and: [
-                        //     { clinic: user.clinic },
-                        //     { appoimentTime: { $gte: start_date, $lte: end_date } },
-                        // ],
+                        // clinic: user.clinic,
+                        appointmentTime: { $gt: startDate, $lt: endDate },
                         $or: [
                             { doctorName: searchString },
                             { reason: searchString },
@@ -125,45 +125,32 @@ const getAppointments = async (req, res) => {
                         ]
                     }
                 },
-                { '$facet'    : {
-                    metadata: [ { $count: "totalResults" }, { $addFields: { page: _page  } } ],
-                    data: [ {$sort: sorter},{ $skip: (_page-1)*_perPage }, { $limit: _perPage } ] // add projection here wish you re-shape the docs
-                } },
-               
-                // {
-                //     $group: {
-                //         _id: null,
-                //         total: { $sum: 1 },
-                //         results: { $push: "$$ROOT" }
-                //     }
-                // },
-                // {
-                //     $project: {
-                //         _id: 0,
-                //         total: "$total",
-                //         results: 1
-                //     }
-                // }
+                {
+                    $facet: {
+                        metadata: [
+                            { $count: "totalResults" }
+                        ],
+                        data: [
+                            { $sort: sorter },
+                            { $skip: (_page - 1) * _perPage },
+                            { $limit: _perPage },
+                            { $project: { __v: 0, "patient.__v": 0 } }
+                        ]
+                    }
+                }
             ])
-        
+
         appointments = appointments[0]
-        const total = appointments?appointments.total?appointments.total:0:0
-        let _totalResults=appointments.metadata[0].totalResults
-        console.log(appointments.metadata[0].totalResults)
-        appointments.metadata={ 
-            totalResults:_totalResults,
-          
-            perPage: _perPage,
-            totalPages: Math.ceil(_totalResults / _perPage),
+        const total = appointments.metadata[0] ? appointments.metadata[0].totalResults : 0
+        appointments.metadata = {
             currentPage: _page,
-         
-            nextPage: _page + 1 > Math.ceil(_totalResults / _perPage) ? null : _page + 1,
+            perPage: _perPage,
+            totalResults: total,
+            totalPages: Math.ceil(total / _perPage),
+            nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
             prevPage: _page - 1 <= 0 ? null : _page - 1
         }
-        return res.status(200).send(
-            appointments
-           
-        )
+        return res.status(200).send(appointments)
     } catch (err) {
         console.log(err)
         return res.status(400).send({ error: "Failed to get appointments." })
