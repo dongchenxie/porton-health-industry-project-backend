@@ -29,7 +29,6 @@ app.use(express.json())
 app.use(express.urlencoded());
 dotenv.config()
 
-
 mongoose.connect(process.env.DB_CONNECTION,
     { useNewUrlParser: true,useUnifiedTopology: true },
     () => {
