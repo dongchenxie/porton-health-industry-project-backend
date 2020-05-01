@@ -93,8 +93,8 @@ const getAppointments = async (req, res) => {
     const _perPage = Number(perPage)
     const searchString = new RegExp(search, "i")
     let sorter = {}
-    sorter[sort_by.split('.')[0]] = sort_by.indexOf('.asc') != -1 ? 1 : -1
-
+   // sorter[sort_by.split('.')[0]] = sort_by.indexOf('.asc') != -1 ? 1 : -1
+    sorter["patient.firstName"]=-1
     try {
         // const user = await User.findById(userId)
         let appointments = await Appointment
@@ -127,11 +127,9 @@ const getAppointments = async (req, res) => {
                 },
                 { '$facet'    : {
                     metadata: [ { $count: "totalResults" }, { $addFields: { page: _page  } } ],
-                    data: [ { $skip: (_page-1)*_perPage }, { $limit: _perPage } ] // add projection here wish you re-shape the docs
+                    data: [ {$sort: sorter},{ $skip: (_page-1)*_perPage }, { $limit: _perPage } ] // add projection here wish you re-shape the docs
                 } },
-                {
-                    $sort: sorter
-                },
+               
                 // {
                 //     $group: {
                 //         _id: null,
