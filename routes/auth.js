@@ -1,12 +1,12 @@
 const router = require("express").Router()
 const User = require("../model/User")
-const Terminal = require("../model/Terminal")
+
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
 const { registerValidation, loginValidation } = require("../component/validation")
 
-const { registerController, loginController, getUserController, updateUserController, resetPasswordController, updatePermissionController, getTokenInformationController, deleteTerminalController } = require("../controller/authController")
+const { registerController, loginController, getUserController, updateUserController, resetPasswordController, updatePermissionController, getTokenInformationController} = require("../controller/authController")
 
 //validationns:
 //Register
@@ -45,9 +45,5 @@ router.get("/readToken/:token", async (req, res) => {
     return await getTokenInformationController(req, res)
 })
 
-//Terminal Enable/Disable(Delete)
-router.put("/delete/:terminalId", async (req, res) => {
-    return await deleteTerminalController(req, res)
-})
 
 module.exports = router

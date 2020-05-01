@@ -13,14 +13,13 @@ const getAppointmentById = async (req, res) => {
   }
 };
 
-const getTerminalById = async (req, res) => {
-  const { terminalId } = req.params;
-  try {
-    const terminal = await Terminal.findById(terminalId).select("-__v");
-    return res.status(200).send(terminal);
-  } catch (err) {
-    return res.status(400).send({ error: "Invalid Terminal ID." });
-  }
+const getTerminals = async (req, res) => {
+    try {
+        const terminals = await Terminal.find()
+        return res.status(200).send(terminals)
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to get terminals." })
+    }
 };
 
 const deleteTerminal = async (req, res) => {
@@ -47,5 +46,5 @@ const deleteTerminal = async (req, res) => {
 };
 
 module.exports.getAppointmentById = getAppointmentById;
-module.exports.getTerminalById = getTerminalById;
+module.exports.getTerminals = getTerminals;
 module.exports.deleteTerminal = deleteTerminal;
