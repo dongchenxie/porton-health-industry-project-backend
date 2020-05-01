@@ -1,4 +1,5 @@
 const router = require("express").Router()
+const { auth } = require("./verifyToken")
 const { getAppointmentById, updateAppointmentById, getAppointments } = require("../controller/clientController")
 
 // Get Client/Appointment/{id}

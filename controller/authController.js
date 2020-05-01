@@ -194,7 +194,9 @@ const getUsersController = async (req, res) => {
         return res.status(400).send(error.details[0].message)
     }
     const { page = 1, perPage = 10, sort_by = 'date.asc', search } = req.query
-    let searchString = new RegExp(search, "i")
+    const _page = Number(page)
+    const _perPage = Number(perPage)
+    const searchString = new RegExp(search, "i")
     let sorter = {}
     sorter[sort_by.split('.')[0]] = sort_by.indexOf('.asc') != -1 ? 1 : -1
     try {
@@ -208,8 +210,8 @@ const getUsersController = async (req, res) => {
                 ]
             })
             .select("-password -__v")
-            .limit(Number(perPage))
-            .skip((page - 1) * perPage)
+            .limit(_perPage)
+            .skip((_page - 1) * _perPage)
             .sort(sorter)
             .exec()
         const total = await User
@@ -225,11 +227,11 @@ const getUsersController = async (req, res) => {
         return res.status(200).send({
             users,
             totalResults: total,
-            perPage: perPage,
-            totalPages: Math.ceil(total / perPage),
-            currentPage: page,
-            nextPage: page + 1 >= Math.ceil(total / perPage) ? null : page + 1,
-            prevPage: page - 1 <= 0 ? null : page - 1
+            perPage: _perPage,
+            totalPages: Math.ceil(total / _perPage),
+            currentPage: _page,
+            nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
+            prevPage: _page - 1 <= 0 ? null : _page - 1
         })
     } catch (err) {
         return res.status(400).send({ error: "Failed to get users." })
