@@ -68,4 +68,3 @@ module.exports.updateValidation = updateValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
 module.exports.getUsersValidation = getUsersValidation;
 module.exports.updatePermission = updatePermission;
-module.exports.deleteTerminal = deleteTerminal;
