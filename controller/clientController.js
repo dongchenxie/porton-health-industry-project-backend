@@ -2,6 +2,7 @@ const Appointment = require('../model/Appointment')
 const Clinic = require('../model/Clinic')
 const Patient = require('../model/Patient')
 const User = require('../model/User')
+const mongoose = require('mongoose')
 const { updateAppointmentValidation, getAppointmentsValidation } = require('../component/validation')
 
 const getAppointmentById = async (req, res) => {
@@ -87,18 +88,40 @@ const getAppointments = async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
-    // const userId = req.user._id
+    const userId = req.user._id
     const { page = 1, perPage = 10, sort_by = 'appointmentTime.asc', search, start_date, end_date } = req.query
     const _page = Number(page)
     const _perPage = Number(perPage)
-    const startDate = start_date ? new Date(start_date) : Date.now
-    const endDate = end_date ? new Date(end_date) : Date.now
+    let startDate
+    let endDate
+    if (start_date) {
+        startDate = new Date(start_date)
+    } else {
+        startDate = new Date()
+        startDate.setHours(0)
+        startDate.setMinutes(0)
+        startDate.setSeconds(0)
+    }
+
+    if (end_date) {
+        endDate = new Date(end_date)
+        if (endDate < startDate) {
+            return res.status(400).send({error: "End date must be greater than start date."})
+        }
+    } else {
+        endDate = new Date(startDate)
+        endDate.setDate(startDate.getDate() + 1)
+        endDate.setHours(23)
+        endDate.setMinutes(59)
+        endDate.setSeconds(59)
+    }
+
     const searchString = new RegExp(search, "i")
     let sorter = {}
     sorter[sort_by.substring(0, sort_by.lastIndexOf('.'))] = sort_by.indexOf('.asc') != -1 ? 1 : -1
 
     try {
-        // const user = await User.findById(userId)
+        const user = await User.findById(userId)
         let appointments = await Appointment
             .aggregate([
                 {
@@ -111,8 +134,8 @@ const getAppointments = async (req, res) => {
                 },
                 {
                     $match: {
-                        // clinic: user.clinic,
-                        appointmentTime: { $gt: startDate, $lt: endDate },
+                        clinic: user.clinic,
+                        appointmentTime: { $gte: startDate, $lte: endDate },
                         $or: [
                             { doctorName: searchString },
                             { reason: searchString },

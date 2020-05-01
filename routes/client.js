@@ -13,7 +13,7 @@ router.put("/appointment/:appointmentId", async (req, res) => {
 })
 
 // Get Client/Appointments
-router.get("/appointments", async (req, res) => {
+router.get("/appointments", auth("CLIENT_ADMIN"), async (req, res) => {
     return await getAppointments(req, res)
 })
 
