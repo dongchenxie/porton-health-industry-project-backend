@@ -56,7 +56,7 @@ const loginController = async (req, res) => {
     const exprieDate = new Date()
     exprieDate.setDate(exprieDate.getDate() + 14)
     console.log(exprieDate)
-    const token = jwt.sign({ _id: user.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
+    const token = jwt.sign({ _id: user.id, expire_date: exprieDate, password: user.password }, process.env.TOKEN_SECRET)
     console.log({ token: token, role: user.role })
     user.password = null
     return res.header('auth-token', token).send({ token: token, role: user.role, user: user })
@@ -178,7 +178,7 @@ const getTokenInformationController = async (req, res) => {
     if (!token) return res.status(401).send({ error: "Missing auth token" })
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-        const user = await User.findOne({ _id: verified._id }).select("-password -__v")//mongoose query
+        const user = await User.findOne({ _id: verified._id, password: verified.password }).select("-password -__v")//mongoose query
         if (!user) {
             res.status(400).send({ error: "Invalid Token" });
         }
