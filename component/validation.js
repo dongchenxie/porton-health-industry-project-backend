@@ -31,7 +31,6 @@ const updateValidation = (data) => {
     return schema.validate(data)
 }
 
-
 const resetPasswordValidation = (data) => {
     const schema = Joi.object({
         password: Joi.string().min(6).required()
