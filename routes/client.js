@@ -1,5 +1,7 @@
 const router = require("express").Router()
 const { getAppointmentById, deleteTerminal, getTerminalById } = require("../controller/clientController")
+// const {auth} = require("./verifyToken")
+
 
 // Get Client/Appointment/{id}
 router.get("/appointment/:appointmentId", async (req, res) => {
@@ -7,12 +9,13 @@ router.get("/appointment/:appointmentId", async (req, res) => {
 })
 
 // Get Client/Terminal/{id}
-router.get("/termianl/:terminalId", async (req, res) => {
+router.get("/terminal/:terminalId", async (req, res) => {
     return await getTerminalById(req, res)
 })
 
 // Delete Client/Terminal/{id}
-router.delete("/terminal/:terminalId",(req,res)=>{
+//,auth("CLIENT_ADMIN")
+router.delete("/terminal/:terminalId", async(req,res)=>{
     return await deleteTerminal(req, res)
 })
 
