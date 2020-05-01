@@ -181,6 +181,8 @@ const getTokenInformationController = async (req, res) => {
         const user = await User.findOne({ _id: verified._id, password: verified.password }).select("-password -__v")//mongoose query
         if (!user) {
             res.status(400).send({ error: "Invalid Token" });
+        } else if (user.isEnabled === false){
+            return res.status(400).send({ error: "The account is not enabled." })
         }
         return res.status(200).send(user)
     } catch (e) {
