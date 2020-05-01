@@ -6,7 +6,7 @@ const dotenv =require("dotenv")
 const postRoute =require("./routes/post")
 const cors = require('cors')
 const usersRoute = require("./routes/users")
-const terminalsRoute = require("./routes/terminals")
+const terminalRoute = require("./routes/client")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
 
@@ -40,6 +40,7 @@ app.use("/api/posts", postRoute)
 app.use("/api/users", usersRoute)
 app.use("/api/clinics", clinicsRoute)
 app.use("/api/client", clientRoute)
+app.use("/api/terminal", terminalRoute)
 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
