@@ -17,4 +17,9 @@ router.get("/appointments", auth("CLIENT_ADMIN"), async (req, res) => {
     return await getAppointments(req, res)
 })
 
+// Get Client/terminal/verificationcontent
+router.get("/terminal/verificationContent", auth("CLIENT_ADMIN"), async (req, res) => {
+    return await getVerificationContent(req, res)
+})
+
 module.exports = router
