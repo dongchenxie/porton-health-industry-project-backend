@@ -17,14 +17,7 @@ const getAppointmentById = async (req, res) => {
   }
 };
 
-const getTerminals = async (req, res) => {
-  try {
-    const terminals = await Terminal.find();
-    return res.status(200).send(terminals);
-  } catch (err) {
-    return res.status(400).send({ error: "Failed to get terminals." });
-  }
-};
+
 
 const deleteTerminal = async (req, res) => {
   const { terminalId } = req.params;
