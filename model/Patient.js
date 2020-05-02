@@ -20,6 +20,9 @@ const patientSchema = new mongoose.Schema({
     mrp: {
         type: String
     },
+    email: {
+        type: String
+    },
     phoneNumber: {
         type: String
     },
