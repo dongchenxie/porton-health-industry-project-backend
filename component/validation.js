@@ -96,6 +96,8 @@ module.exports.updateValidation = updateValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
 module.exports.getUsersValidation = getUsersValidation;
 module.exports.updatePermission = updatePermission;
+
 module.exports.updateAppointmentValidation = updateAppointmentValidation;
 module.exports.getAppointmentsValidation = getAppointmentsValidation;
 module.exports.getTerminalsValidation = getTerminalsValidation;
+
