@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const { auth } = require("./verifyToken")
-const { getAppointmentById, updateAppointmentById, getAppointments } = require("../controller/clientController")
+const { getAppointmentById, updateAppointmentById, getAppointments, getVerificationContent } = require("../controller/clientController")
 
 // Get Client/Appointment/{id}
 router.get("/appointment/:appointmentId", async (req, res) => {

@@ -184,20 +184,26 @@ const getAppointments = async (req, res) => {
 
 const getVerificationContent = async (req, res) => {
     const { terminalId } = req.params
-     try {
-        await Terminal.findById(terminalId)
-        return res.status(200).send( "success")
-    } catch (err) {
-        return res.status(400).send({ error: "Invalid Terminal ID." })
+  try {
+    const terminalExists = await Terminal.findOne({
+      _id: terminalId,
+    //   status: 'ENABLED'
+    });
+    if (terminalExists) {
+    //   return res.status(200).send( "success")
+        try {
+            const verificationContent = Terminal.VerificationContent
+           return res.status(200).send({name})
+        }
+     catch (err) {
+        return res.status(400).send({ error: "Failed to get Verification Contents." })
     }
+  } 
+  }catch (err) {
+    return res.status(400).send({ error: "Invalid data request." });
+  }
 
-    // try {
-    //     let verificationContents = await VerificationContent.terminalId
-    //        return res.status(200).send(verificationContents)
-    //     }
-    //  catch (err) {
-    //     return res.status(400).send({ error: "Failed to get Verification Contents." })
-    // }
+
 }
 
 

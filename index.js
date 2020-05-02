@@ -8,6 +8,7 @@ const cors = require('cors')
 const usersRoute = require("./routes/users")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
+const VerificationContent = require('./model/VerificationContent')
 
 const swaggerOptions={
     swaggerDefinition: {
@@ -41,6 +42,9 @@ app.use("/api/client", clientRoute)
 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
+
+    const verificationContent = new VerificationContent
+verificationContent.save()
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
