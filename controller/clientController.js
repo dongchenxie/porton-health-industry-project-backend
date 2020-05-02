@@ -46,6 +46,41 @@ const deleteTerminal = async (req, res) => {
   }
 };
 
+const createTerminal = async (req, res) => {
+  const { terminalName } = req.params;
+  try {
+    const terminalExists = await Terminal.findOne({
+      name: terminalName,
+      status: 'DISABLED'
+    }) + await Terminal.findOne({
+      name: terminalName,
+      status: 'ENABLED'
+    });
+    if (terminalExists) {
+      return res.status(400).send({ error: "The Terminal is already exists." });
+    }
+  } catch (err) {
+    return res.status(400).send({ error: "Invalid Terminal Name." });
+  }
+
+  const terminal = new Terminal({
+    name: terminalName,
+    token: "",
+    creationDate: Date.now(),
+    status: "DISABLED",
+    // verificationContent: ,
+    // clinic: ,
+  });
+
+  try {
+    terminal.save();
+    return res.status(201).send("Successfully created terminal");
+  } catch (err) {
+    return res.status(400).send({ error: err });
+  }
+};
+
 module.exports.getAppointmentById = getAppointmentById;
 module.exports.getTerminals = getTerminals;
 module.exports.deleteTerminal = deleteTerminal;
+module.exports.createTerminal = createTerminal;
