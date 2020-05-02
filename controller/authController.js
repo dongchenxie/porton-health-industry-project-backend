@@ -183,7 +183,10 @@ const getTokenInformationController = async (req, res) => {
             res.status(400).send({ error: "Invalid Token" });
         } else if (user.isEnabled === false){
             return res.status(400).send({ error: "The account is not enabled." })
-        }
+        } 
+        // else if (user.password !== verified.password){
+        //     return res.status(400).send({ error: "Passwords do not match." })
+        // }
         return res.status(200).send(user)
     } catch (e) {
         res.status(400).send({ error: "Invalid Token" });

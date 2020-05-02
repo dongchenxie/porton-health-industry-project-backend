@@ -57,13 +57,13 @@ const updatePermission = data => {
 
 const updateAppointmentValidation = data => {
     const schema = Joi.object({
-        appointmentTime: Joi.date().required(),
-        doctorName: Joi.string().min(1).max(255).required(),
-        reason: Joi.string().min(1).max(255).required(),
-        status: Joi.string().pattern(/^(NOT_SHOW|PENDING|CHECK_IN)$/).messages({ "string.pattern.base": "Status is undefined." }).required(),
-        comment: Joi.string().min(1).max(255).required(),
-        clinic: Joi.string().min(1).max(255).required(),
-        patient: Joi.string().min(1).max(255).required()
+        appointmentTime: Joi.date(),
+        doctorName: Joi.string().min(1).max(255),
+        reason: Joi.string().min(1).max(255),
+        status: Joi.string().pattern(/^(NOT_SHOW|PENDING|CHECK_IN)$/).messages({ "string.pattern.base": "Status is undefined." }),
+        comment: Joi.string().min(1).max(255),
+        clinic: Joi.string().min(1).max(255),
+        patient: Joi.string().min(1).max(255)
     })
     return schema.validate(data)
 }
