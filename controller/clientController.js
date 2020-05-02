@@ -4,6 +4,7 @@ const Clinic = require('../model/Clinic')
 const Patient = require('../model/Patient')
 const User = require('../model/User')
 const mongoose = require('mongoose')
+const jwt = require("jsonwebtoken")
 const { updateAppointmentValidation, getAppointmentsValidation } = require('../component/validation')
 
 
@@ -69,9 +70,14 @@ const createTerminal = async (req, res) => {
     return res.status(400).send({ error: "Invalid Terminal Name." });
   }
 
+    //Create token
+    const exprieDate = new Date()
+    exprieDate.setDate(exprieDate.getDate() + 14)
+    const token = jwt.sign({ _id: terminalName.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
+
   const terminal = new Terminal({
     name: terminalName,
-    token: "",
+    token: token,
     creationDate: Date.now(),
     status: "DISABLED",
     // verificationContent: ,

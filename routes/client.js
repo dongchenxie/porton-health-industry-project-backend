@@ -23,7 +23,9 @@ router.delete("/terminal/:terminalId", auth("CLIENT_ADMIN"), async (req, res) =>
 })
 
 // Post Client/Terminal
-router.post("/terminal/:terminalName", auth("CLIENT_ADMIN"), async (req, res) => {
+router.post("/terminal/:terminalName",
+ auth("CLIENT_ADMIN"),
+  async (req, res) => {
     return await createTerminal(req, res)
 })
 
