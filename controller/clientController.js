@@ -2,6 +2,8 @@ const Appointment = require('../model/Appointment')
 const Clinic = require('../model/Clinic')
 const Patient = require('../model/Patient')
 const User = require('../model/User')
+const VerificationContent = require('../model/VerificationContent')
+const Terminal = require('../model/Terminal')
 const mongoose = require('mongoose')
 const { updateAppointmentValidation, getAppointmentsValidation } = require('../component/validation')
 
@@ -180,6 +182,27 @@ const getAppointments = async (req, res) => {
     }
 }
 
+const getVerificationContent = async (req, res) => {
+    const { terminalId } = req.params
+     try {
+        await Terminal.findById(terminalId)
+        return res.status(200).send( "success")
+    } catch (err) {
+        return res.status(400).send({ error: "Invalid Terminal ID." })
+    }
+
+    // try {
+    //     let verificationContents = await VerificationContent.terminalId
+    //        return res.status(200).send(verificationContents)
+    //     }
+    //  catch (err) {
+    //     return res.status(400).send({ error: "Failed to get Verification Contents." })
+    // }
+}
+
+
+
 module.exports.getAppointmentById = getAppointmentById
 module.exports.updateAppointmentById = updateAppointmentById
 module.exports.getAppointments = getAppointments
+module.exports.getVerificationContent = getVerificationContent

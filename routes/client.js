@@ -18,7 +18,9 @@ router.get("/appointments", auth("CLIENT_ADMIN"), async (req, res) => {
 })
 
 // Get Client/terminal/verificationcontent
-router.get("/terminal/verificationContent", auth("CLIENT_ADMIN"), async (req, res) => {
+router.get("/terminal/verificationContent/:terminalId", 
+// auth("CLIENT_ADMIN"),
+ async (req, res) => {
     return await getVerificationContent(req, res)
 })
 
