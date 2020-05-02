@@ -2,8 +2,8 @@ const Appointment = require('../model/Appointment')
 const Clinic = require('../model/Clinic')
 const Patient = require('../model/Patient')
 const User = require('../model/User')
-const mongoose = require('mongoose')
-const { updateAppointmentValidation, getAppointmentsValidation } = require('../component/validation')
+const Terminal = require('../model/Terminal')
+const { updateAppointmentValidation, getAppointmentsValidation, getTerminalsValidation } = require('../component/validation')
 
 const getAppointmentById = async (req, res) => {
     const { appointmentId } = req.params
@@ -106,7 +106,7 @@ const getAppointments = async (req, res) => {
     if (end_date) {
         endDate = new Date(end_date)
         if (endDate < startDate) {
-            return res.status(400).send({error: "End date must be greater than start date."})
+            return res.status(400).send({ error: "End date must be greater than start date." })
         }
     } else {
         endDate = new Date(startDate)
@@ -122,46 +122,45 @@ const getAppointments = async (req, res) => {
 
     try {
         const user = await User.findById(userId)
-        let appointments = await Appointment
-            .aggregate([
-                {
-                    $lookup: {
-                        from: Patient.collection.name,
-                        localField: "patient",
-                        foreignField: "_id",
-                        as: "patient"
-                    }
-                },
-                {
-                    $match: {
-                        clinic: user.clinic,
-                        appointmentTime: { $gte: startDate, $lte: endDate },
-                        $or: [
-                            { doctorName: searchString },
-                            { reason: searchString },
-                            { comment: searchString },
-                            { "patient.firstName": searchString },
-                            { "patient.lastName": searchString },
-                            { "patient.careCardNumber": searchString },
-                            { "patient.phoneNumber": searchString },
-                            { "patient.email": searchString }
-                        ]
-                    }
-                },
-                {
-                    $facet: {
-                        metadata: [
-                            { $count: "totalResults" }
-                        ],
-                        data: [
-                            { $sort: sorter },
-                            { $skip: (_page - 1) * _perPage },
-                            { $limit: _perPage },
-                            { $project: { __v: 0, "patient.__v": 0 } }
-                        ]
-                    }
+        let appointments = await Appointment.aggregate([
+            {
+                $lookup: {
+                    from: Patient.collection.name,
+                    localField: "patient",
+                    foreignField: "_id",
+                    as: "patient"
                 }
-            ])
+            },
+            {
+                $match: {
+                    clinic: user.clinic,
+                    appointmentTime: { $gte: startDate, $lte: endDate },
+                    $or: [
+                        { doctorName: searchString },
+                        { reason: searchString },
+                        { comment: searchString },
+                        { "patient.firstName": searchString },
+                        { "patient.lastName": searchString },
+                        { "patient.careCardNumber": searchString },
+                        { "patient.phoneNumber": searchString },
+                        { "patient.email": searchString }
+                    ]
+                }
+            },
+            {
+                $facet: {
+                    metadata: [
+                        { $count: "totalResults" }
+                    ],
+                    data: [
+                        { $sort: sorter },
+                        { $skip: (_page - 1) * _perPage },
+                        { $limit: _perPage },
+                        { $project: { __v: 0, "patient.__v": 0 } }
+                    ]
+                }
+            }
+        ])
 
         appointments = appointments[0]
         const total = appointments.metadata[0] ? appointments.metadata[0].totalResults : 0
@@ -180,6 +179,60 @@ const getAppointments = async (req, res) => {
     }
 }
 
+const getTerminals = async (req, res) => {
+    const { error } = getTerminalsValidation(req.query)
+    if (error) {
+        return res.status(400).send(error.details[0].message)
+    }
+    const userId = req.user._id
+    const { search, sort_by = "name.asc", page = 1, perPage = 10 } = req.query
+    const _page = Number(page)
+    const _perPage = Number(perPage)
+    const searchString = new RegExp(search, "i")
+    let sorter = {}
+    sorter[sort_by.split(".")[0]] = sort_by.indexOf(".asc") != -1 ? 1 : -1
+
+    try {
+        const user = await User.findById(userId)
+        let terminals = await Terminal.aggregate([
+            {
+                $match: {
+                    clinic: user.clinic,
+                    name: searchString,
+                }
+            },
+            {
+                $facet: {
+                    metadata: [
+                        { $count: "totalResults" }
+                    ],
+                    data: [
+                        { $sort: sorter },
+                        { $skip: (_page - 1) * _perPage },
+                        { $limit: _perPage }      
+                    ]
+                }
+            }
+        ])
+
+        terminals = terminals[0]
+        const total = terminals.metadata[0] ? terminals.metadata[0].totalResults : 0
+        terminals.metadata = {
+            currentPage: _page,
+            perPage: _perPage,
+            totalResults: total,
+            totalPages: Math.ceil(total / _perPage),
+            nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
+            prevPage: _page - 1 <= 0 ? null : _page - 1
+        }
+        return res.status(200).send(terminals)
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Failed to get terminals." })
+    }
+}
+
 module.exports.getAppointmentById = getAppointmentById
 module.exports.updateAppointmentById = updateAppointmentById
 module.exports.getAppointments = getAppointments
+module.exports.getTerminals = getTerminals
