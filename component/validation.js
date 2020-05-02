@@ -80,11 +80,28 @@ const getAppointmentsValidation = data => {
     return schema.validate(data)
 }
 
+
+const getTerminalsValidation = data => {
+    const schema = Joi.object({
+        search: Joi.string().min(1).max(255),
+        page: Joi.number().integer().min(1),
+        perPage: Joi.number().integer().min(1),
+        sort_by: Joi.string().pattern(/^(name.asc|name.desc|status.asc|status.desc)$/).messages({ "string.pattern.base": "Sorter is undefined." })
+    })
+    return schema.validate(data)
+}
+
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateValidation = updateValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
 module.exports.getUsersValidation = getUsersValidation;
 module.exports.updatePermission = updatePermission;
+
+
 module.exports.updateAppointmentValidation = updateAppointmentValidation;
-module.exports.getAppointmentsValidation = getAppointmentsValidation
+module.exports.getAppointmentsValidation = getAppointmentsValidation;
+module.exports.getTerminalsValidation = getTerminalsValidation;
+
+
