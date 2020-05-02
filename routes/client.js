@@ -14,10 +14,13 @@ router.get("/terminal/:terminalId", async (req, res) => {
 })
 
 // Delete Client/Terminal/{id}
-//,auth("CLIENT_ADMIN")
 router.delete("/terminal/:terminalId", async(req,res)=>{
     return await deleteTerminal(req, res)
 })
 
+// Post Client/Terminal
+router.post("/terminal", async(req,res)=>{
+    return await postTerminal(req, res)
+})
 
 module.exports = router
