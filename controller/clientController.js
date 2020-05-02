@@ -14,32 +14,33 @@ const getAppointmentById = async (req, res) => {
 };
 
 const getTerminals = async (req, res) => {
-    try {
-        const terminals = await Terminal.find()
-        return res.status(200).send(terminals)
-    } catch (err) {
-        return res.status(400).send({ error: "Failed to get terminals." })
-    }
+  try {
+    const terminals = await Terminal.find();
+    return res.status(200).send(terminals);
+  } catch (err) {
+    return res.status(400).send({ error: "Failed to get terminals." });
+  }
 };
 
 const deleteTerminal = async (req, res) => {
-  if (error) {
-    return res.status(400).send(error.details[0].message);
-  }
   const { terminalId } = req.params;
+
   try {
-    await Terminal.findById(terminalId);
+    const terminal = await Terminal.findById(terminalId);
+    if (terminal.status == "DELETED") {
+      return res
+        .status(400)
+        .send({ error: "The Terminal is already Deleted." });
+    }
   } catch (err) {
     return res.status(400).send({ error: "Invalid Terminal Id." });
   }
-  if (terminal.status == "DELETED") {
-    return res.status(400).send({ error: "The Terminal is already Deleted." });
-  }
+
   try {
     await Terminal.findByIdAndUpdate(terminalId, {
       status: "DELETED",
     });
-    return res.status(200).send();
+    return res.status(200).send("Terminal Deleted");
   } catch (err) {
     return res.status(400).send({ error: "Failed to update Terminal." });
   }
