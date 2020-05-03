@@ -26,7 +26,7 @@ const updateValidation = (data) => {
         lastName: Joi.string().min(1).max(255).required(),
         email: Joi.string().min(5).required().email().required(),
         role: Joi.string().pattern(/^(SYSTEM_ADMIN|CLIENT_ADMIN)$/).required().messages({ "string.pattern.base": "Access denied." }).required(),
-        clinic: Joi.string()
+        clinic: Joi.string().min(1).max(255)
     })
     return schema.validate(data)
 }
@@ -90,6 +90,17 @@ const getTerminalsValidation = data => {
     return schema.validate(data)
 }
 
+const updateTerminalValidation = data => {
+    const schema = Joi.object({
+        name: Joi.string().min(1).max(255).required(),
+        token: Joi.string().min(1).max(255).required(),
+        status: Joi.string().pattern(/^(ENABLED|DISABLED|DELETED)$/).required().messages({ "string.pattern.base": "Status is undefined." }).required(),
+        verificationContent: Joi.string().min(1).max(255).required(),
+        clinic: Joi.string().min(1).max(255).required()
+    })
+    return schema.validate(data)
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateValidation = updateValidation;
@@ -100,4 +111,5 @@ module.exports.updatePermission = updatePermission;
 module.exports.updateAppointmentValidation = updateAppointmentValidation;
 module.exports.getAppointmentsValidation = getAppointmentsValidation;
 module.exports.getTerminalsValidation = getTerminalsValidation;
+module.exports.updateTerminalValidation = updateTerminalValidation;
 
