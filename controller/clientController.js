@@ -205,18 +205,10 @@ const getVerificationContent = async (req, res) => {
       _id: terminalId,
       status: "ENABLED",
     });
-    if (terminalExists) {
-      try {
-        const verificationContent = await VerificationContent.findById(
-          terminalExists.verificationContent
-        );
-        return res.status(200).send(verificationContent);
-      } catch (err) {
-        return res
-          .status(400)
-          .send({ error: "Failed to get Verification Contents." });
-      }
-    }
+    const verificationContent = await VerificationContent.findById(
+      terminalExists.verificationContent
+    );
+    return res.status(200).send(verificationContent);
   } catch (err) {
     return res.status(400).send({ error: "Invalid data request." });
   }
@@ -225,22 +217,11 @@ const getVerificationContent = async (req, res) => {
 const getTerminalById = async (req, res) => {
   const { terminalId } = req.params;
   try {
-    const terminalExists = await Terminal.findOne({
-      _id: terminalId,
-      status: "ENABLED",
-    });
-    if (terminalExists) {
-      try {
-        const verificationContent = await VerificationContent.findById(
-          terminalExists.verificationContent
-        );
-        return res.status(200).send(verificationContent);
-      } catch (err) {
-        return res
-          .status(400)
-          .send({ error: "Failed to get Verification Contents." });
-      }
-    }
+    const terminal = await Terminal.findById(terminalId);
+    const verificationContent = await VerificationContent.findById(
+      terminal.verificationContent
+    );
+    return res.status(200).send(terminal + verificationContent);
   } catch (err) {
     return res.status(400).send({ error: "Invalid data request." });
   }
