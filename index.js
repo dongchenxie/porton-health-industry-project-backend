@@ -8,7 +8,7 @@ const cors = require('cors')
 const usersRoute = require("./routes/users")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
-const Terminal = require("./model/Terminal");
+// const Terminal = require("./model/Terminal");
 
 const swaggerOptions={
     swaggerDefinition: {
