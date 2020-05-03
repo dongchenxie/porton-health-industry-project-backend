@@ -8,6 +8,7 @@ const cors = require('cors')
 const usersRoute = require("./routes/users")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
+const Terminal = require("./model/Terminal");
 
 const swaggerOptions={
     swaggerDefinition: {
@@ -28,21 +29,6 @@ app.use(express.json())
 app.use(express.urlencoded());
 dotenv.config()
 
-//handle 404 error
-// app.use((req,res,next) => {
-//     const error = new httpError('Could not find the route' , 404);
-//     return next(error);
-// })
-// //handle 500 error
-// app.use((error,req,res,next) => {
-
-//     if(res.headerSent) {
-//         return next(error)
-//     }
-//     res.status(error.code||500) 
-//     res.json({message:error.message || 'An unknown message occured'})
-// });
-
 mongoose.connect(process.env.DB_CONNECTION,
     { useNewUrlParser: true,useUnifiedTopology: true },
     () => {
@@ -54,10 +40,13 @@ app.use("/api/users", usersRoute)
 app.use("/api/clinics", clinicsRoute)
 app.use("/api/client", clientRoute)
 
+
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// const terminal = new Terminal()
+// terminal.save()
 
 app.listen(3333, () => {
     console.log("server runing at port 3333")
