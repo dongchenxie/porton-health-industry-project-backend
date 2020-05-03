@@ -118,108 +118,99 @@ const updateAppointmentById = async (req, res) => {
 };
 
 const getAppointments = async (req, res) => {
-  const { error } = getAppointmentsValidation(req.query);
-  if (error) {
-    return res.status(400).send(error.details[0].message);
-  }
-  const userId = req.user._id;
-  const {
-    page = 1,
-    perPage = 10,
-    sort_by = "appointmentTime.asc",
-    search,
-    start_date,
-    end_date,
-  } = req.query;
-  const _page = Number(page);
-  const _perPage = Number(perPage);
-  let startDate;
-  let endDate;
-  if (start_date) {
-    startDate = new Date(start_date);
-  } else {
-    startDate = new Date();
-    startDate.setHours(0);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
-  }
-
-  if (end_date) {
-    endDate = new Date(end_date);
-    if (endDate < startDate) {
-      return res
-        .status(400)
-        .send({ error: "End date must be greater than start date." });
+    const { error } = getAppointmentsValidation(req.query)
+    if (error) {
+        return res.status(400).send(error.details[0].message)
     }
-  } else {
-    endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
-    endDate.setHours(23);
-    endDate.setMinutes(59);
-    endDate.setSeconds(59);
-  }
-};
-const searchString = new RegExp(search, "i");
-let sorter = {};
-sorter[sort_by.substring(0, sort_by.lastIndexOf("."))] =
-  sort_by.indexOf(".asc") != -1 ? 1 : -1;
+    const userId = req.user._id
+    const { page = 1, perPage = 10, sort_by = 'appointmentTime.asc', search, start_date, end_date } = req.query
+    const _page = Number(page)
+    const _perPage = Number(perPage)
+    let startDate
+    let endDate
+    if (start_date) {
+        startDate = new Date(start_date)
+    } else {
+        startDate = new Date()
+        startDate.setHours(0)
+        startDate.setMinutes(0)
+        startDate.setSeconds(0)
+    }
 
-try {
-  const user = await User.findById(userId);
-  let appointments = await Appointment.aggregate([
-    {
-      $lookup: {
-        from: Patient.collection.name,
-        localField: "patient",
-        foreignField: "_id",
-        as: "patient",
-      },
-    },
-    {
-      $match: {
-        clinic: user.clinic,
-        appointmentTime: { $gte: startDate, $lte: endDate },
-        $or: [
-          { doctorName: searchString },
-          { reason: searchString },
-          { comment: searchString },
-          { "patient.firstName": searchString },
-          { "patient.lastName": searchString },
-          { "patient.careCardNumber": searchString },
-          { "patient.phoneNumber": searchString },
-          { "patient.email": searchString },
-        ],
-      },
-    },
-    {
-      $facet: {
-        metadata: [{ $count: "totalResults" }],
-        data: [
-          { $sort: sorter },
-          { $skip: (_page - 1) * _perPage },
-          { $limit: _perPage },
-          { $project: { __v: 0, "patient.__v": 0 } },
-        ],
-      },
-    },
-  ]);
+    if (end_date) {
+        endDate = new Date(end_date)
+        if (endDate < startDate) {
+            return res.status(400).send({ error: "End date must be greater than start date." })
+        }
+    } else {
+        endDate = new Date(startDate)
+        endDate.setDate(startDate.getDate() + 1)
+        endDate.setHours(23)
+        endDate.setMinutes(59)
+        endDate.setSeconds(59)
+    }
 
-  appointments = appointments[0];
-  const total = appointments.metadata[0]
-    ? appointments.metadata[0].totalResults
-    : 0;
-  appointments.metadata = {
-    currentPage: _page,
-    perPage: _perPage,
-    totalResults: total,
-    totalPages: Math.ceil(total / _perPage),
-    nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
-    prevPage: _page - 1 <= 0 ? null : _page - 1,
-  };
-  return res.status(200).send(appointments);
-} catch (err) {
-  console.log(err);
-  return res.status(400).send({ error: "Failed to get appointments." });
+    const searchString = new RegExp(search, "i")
+    let sorter = {}
+    sorter[sort_by.substring(0, sort_by.lastIndexOf('.'))] = sort_by.indexOf('.asc') != -1 ? 1 : -1
+
+    try {
+        const user = await User.findById(userId)
+        let appointments = await Appointment.aggregate([
+            {
+                $lookup: {
+                    from: Patient.collection.name,
+                    localField: "patient",
+                    foreignField: "_id",
+                    as: "patient"
+                }
+            },
+            {
+                $match: {
+                    clinic: user.clinic,
+                    appointmentTime: { $gte: startDate, $lte: endDate },
+                    $or: [
+                        { doctorName: searchString },
+                        { reason: searchString },
+                        { comment: searchString },
+                        { "patient.firstName": searchString },
+                        { "patient.lastName": searchString },
+                        { "patient.careCardNumber": searchString },
+                        { "patient.phoneNumber": searchString },
+                        { "patient.email": searchString }
+                    ]
+                }
+            },
+            {
+                $facet: {
+                    metadata: [
+                        { $count: "totalResults" }
+                    ],
+                    data: [
+                        { $sort: sorter },
+                        { $skip: (_page - 1) * _perPage },
+                        { $limit: _perPage },
+                        { $project: { __v: 0, "patient.__v": 0 } }
+                    ]
+                }
+            }
+        ])
+
+        appointments = appointments[0]
+        const total = appointments.metadata[0] ? appointments.metadata[0].totalResults : 0
+        appointments.metadata = {
+            currentPage: _page,
+            perPage: _perPage,
+            totalResults: total,
+            totalPages: Math.ceil(total / _perPage),
+            nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
+            prevPage: _page - 1 <= 0 ? null : _page - 1
+        }
+        return res.status(200).send(appointments)
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Failed to get appointments." })
+    }
 }
 
 const getVerificationContent = async (req, res) => {
