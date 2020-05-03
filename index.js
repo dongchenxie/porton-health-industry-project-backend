@@ -8,7 +8,7 @@ const cors = require('cors')
 const usersRoute = require("./routes/users")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
-const Terminal = require("./model/Terminal");
+const terminalRoute = require("./routes/terminal")
 
 const swaggerOptions={
     swaggerDefinition: {
@@ -39,14 +39,13 @@ app.use("/api/posts", postRoute)
 app.use("/api/users", usersRoute)
 app.use("/api/clinics", clinicsRoute)
 app.use("/api/client", clientRoute)
+app.use("/api/terminal", terminalRoute)
 
 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// const terminal = new Terminal()
-// terminal.save()
 
 app.listen(3333, () => {
     console.log("server runing at port 3333")
