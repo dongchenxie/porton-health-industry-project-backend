@@ -236,7 +236,7 @@ const getTerminalById = async (req, res) => {
     const verificationContent = await VerificationContent.findById(
       terminal.verificationContent
     );
-    return res.status(200).send(terminal + verificationContent);
+    return res.status(200).send({terminal: terminal , verificationContent: verificationContent});
   } catch (err) {
     return res.status(400).send({ error: "Invalid data request." });
   }
