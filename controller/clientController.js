@@ -3,44 +3,45 @@ const Terminal = require("../model/Terminal");
 const Clinic = require('../model/Clinic')
 const Patient = require('../model/Patient')
 const User = require('../model/User')
-const { updateAppointmentValidation, getAppointmentsValidation, getTerminalsValidation } = require('../component/validation')
+const VerificationContent = require('../model/VerificationContent')
+const { updateAppointmentValidation, getAppointmentsValidation, getTerminalsValidation, updateTerminalValidation } = require('../component/validation')
 
 const getAppointmentById = async (req, res) => {
-  const { appointmentId } = req.params;
-  try {
-    const appointment = await Appointment.findById(appointmentId).select(
-      "-__v"
-    );
-    return res.status(200).send(appointment);
-  } catch (err) {
-    return res.status(400).send({ error: "Invalid appointment ID." });
-  }
+    const { appointmentId } = req.params;
+    try {
+        const appointment = await Appointment.findById(appointmentId).select(
+            "-__v"
+        );
+        return res.status(200).send(appointment);
+    } catch (err) {
+        return res.status(400).send({ error: "Invalid appointment ID." });
+    }
 };
 
 
 
 const deleteTerminal = async (req, res) => {
-  const { terminalId } = req.params;
+    const { terminalId } = req.params;
 
-  try {
-    const terminal = await Terminal.findById(terminalId);
-    if (terminal.status == "DELETED") {
-      return res
-        .status(400)
-        .send({ error: "The Terminal is already Deleted." });
+    try {
+        const terminal = await Terminal.findById(terminalId);
+        if (terminal.status == "DELETED") {
+            return res
+                .status(400)
+                .send({ error: "The Terminal is already Deleted." });
+        }
+    } catch (err) {
+        return res.status(400).send({ error: "Invalid Terminal Id." });
     }
-  } catch (err) {
-    return res.status(400).send({ error: "Invalid Terminal Id." });
-  }
 
-  try {
-    await Terminal.findByIdAndUpdate(terminalId, {
-      status: "DELETED",
-    });
-    return res.status(200).send("Terminal Deleted");
-  } catch (err) {
-    return res.status(400).send({ error: "Failed to update Terminal." });
-  }
+    try {
+        await Terminal.findByIdAndUpdate(terminalId, {
+            status: "DELETED",
+        });
+        return res.status(200).send("Terminal Deleted");
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to update Terminal." });
+    }
 };
 
 
@@ -53,10 +54,7 @@ const updateAppointmentById = async (req, res) => {
     let appointment = {}
     // Check if appointment exists
     try {
-        const appt = await Appointment.findById(appointmentId)
-        if (appt) {
-            appointment = appt
-        }
+        appointment = await Appointment.findById(appointmentId).select('-__v')
     } catch (err) {
         return res.status(400).send({ error: "Invalid appointment ID." })
     }
@@ -65,14 +63,14 @@ const updateAppointmentById = async (req, res) => {
         if (appointment.clinic && appointment.clinic != req.body.clinic) {
             const oldClinic = await Clinic.findById(appointment.clinic)
             oldClinic.appointments.pull(appointment._id)
-            oldClinic.save()
+            await oldClinic.save()
             const newClinic = await Clinic.findById(req.body.clinic)
             newClinic.appointments.push(appointment._id)
-            newClinic.save()
+            await newClinic.save()
         } else if (!appointment.clinic && req.body.clinic) {
             const newClinic = await Clinic.findById(req.body.clinic)
             newClinic.appointments.push(appointment._id)
-            newClinic.save()
+            await newClinic.save()
         }
     } catch (err) {
         return res.status(400).send({ error: "Failed to update appointment in clinic." })
@@ -96,13 +94,15 @@ const updateAppointmentById = async (req, res) => {
     }
     // Update clinic and patient in appointment
     try {
-        appointment.appointmentTime = req.body.appointmentTime
-        appointment.doctorName = req.body.doctorName
-        appointment.reason = req.body.reason
-        appointment.status = req.body.status
-        appointment.comment = req.body.comment
-        appointment.clinic = req.body.clinic
-        appointment.patient = req.body.patient
+        await appointment.update({
+            appointmentTime: req.body.appointmentTime,
+            doctorName: req.body.doctorName,
+            reason: req.body.reason,
+            status: req.body.status,
+            comment: req.body.comment,
+            clinic: req.body.clinic,
+            patient: req.body.patient
+        })
         await appointment.save()
         return res.status(200).send(appointment)
     } catch (err) {
@@ -223,6 +223,14 @@ const getTerminals = async (req, res) => {
         const user = await User.findById(userId)
         let terminals = await Terminal.aggregate([
             {
+                $lookup: {
+                    from: VerificationContent.collection.name,
+                    localField: "verificationContent",
+                    foreignField: "_id",
+                    as: "verificationContent"
+                }
+            },
+            {
                 $match: {
                     clinic: user.clinic,
                     name: searchString,
@@ -236,7 +244,8 @@ const getTerminals = async (req, res) => {
                     data: [
                         { $sort: sorter },
                         { $skip: (_page - 1) * _perPage },
-                        { $limit: _perPage }      
+                        { $limit: _perPage },
+                        { $project: { __v: 0, "verificationContent.__v": 0 } }
                     ]
                 }
             }
@@ -259,8 +268,53 @@ const getTerminals = async (req, res) => {
     }
 }
 
+const updateTerminalById = async (req, res) => {
+    const { error } = updateTerminalValidation(req.body)
+    if (error) {
+        return res.status(400).send(error.details[0].message)
+    }
+    const { terminalId } = req.params
+    let terminal = {}
+    // Check if terminal exists
+    try {
+        terminal = await Terminal.findById(terminalId)
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Invalid terminal ID." })
+    }
+    if (terminal.status == "DELETED") {
+        return res.status(400).send({ error: "Updating deleted terminal is not allowed." })
+    }
+    // Find verification content
+    try {
+        if (req.body.verificationContent) {
+            await VerificationContent.findByIdAndUpdate(terminal.verificationContent, JSON.parse(req.body.verificationContent))
+        }
+    } catch (err) {
+        return res.status(400).send({ error: "Failed to update verification content." })
+    }
+    // Update clinic and verfication content in terminal
+    let json = {}
+    if (req.body.name) {
+        json.name = req.body.name
+    }
+    if (req.body.status) {
+        json.status = req.body.status
+    }
+    try {
+        await terminal.update(json)
+        await terminal.save()
+        terminal = await Terminal.findById(terminal._id).populate('verificationContent', '-__v -_id').select('-__v').exec()
+        return res.status(200).send(terminal)
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Failed to update terminal." })
+    }
+}
+
 module.exports.getAppointmentById = getAppointmentById
 module.exports.updateAppointmentById = updateAppointmentById
 module.exports.getAppointments = getAppointments
 module.exports.getTerminals = getTerminals
-module.exports.deleteTerminal = deleteTerminal;
+module.exports.deleteTerminal = deleteTerminal
+module.exports.updateTerminalById = updateTerminalById
