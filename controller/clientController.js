@@ -226,31 +226,11 @@ const getAppointments = async (req, res) => {
 const getVerificationContent = async (req, res) => {
   const { terminalId } = req.params;
 
-  try {
-    const terminalExists = await Terminal.aggregate([
-      {
-        $lookup: {
-          from: "verificationContent",
-        },
-      },
-    ]);
-
-    //   db.posts.aggregate([
-    //     { $lookup:
-    //         {
-    //            from: "comments",
-    //            localField: "title",
-    //            foreignField: "postTitle",
-    //            as: "comments"
-    //         }
-    //     }
-    // ])
-
-    // try {
-    //   const terminalExists = await Terminal.findOne({
-    //     _id: terminalId,
-    //     // status: "ENABLED",
-    //   });
+    try {
+      const terminalExists = await Terminal.findOne({
+        _id: terminalId,
+        status: "ENABLED",
+      });
     const verificationContent = await VerificationContent.findById(
       terminalExists.verificationContent
     );
