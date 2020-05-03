@@ -92,11 +92,9 @@ const getTerminalsValidation = data => {
 
 const updateTerminalValidation = data => {
     const schema = Joi.object({
-        name: Joi.string().min(1).max(255).required(),
-        token: Joi.string().min(1).max(255).required(),
-        status: Joi.string().pattern(/^(ENABLED|DISABLED|DELETED)$/).required().messages({ "string.pattern.base": "Status is undefined." }).required(),
-        verificationContent: Joi.string().min(1).max(255).required(),
-        clinic: Joi.string().min(1).max(255).required()
+        name: Joi.string().min(1).max(255),
+        status: Joi.string().pattern(/^(ENABLED|DISABLED|DELETED)$/).messages({ "string.pattern.base": "Status is undefined." }),
+        verificationContent: Joi.string().min(1)
     })
     return schema.validate(data)
 }
