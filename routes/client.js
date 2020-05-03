@@ -37,7 +37,7 @@ auth("CLIENT_ADMIN"),
 
 // Get Client/terminal/{id}
 router.get("/terminal/:terminalId", 
-// auth("CLIENT_ADMIN"),
+auth("CLIENT_ADMIN"),
  async (req, res) => {
     return await getTerminalById(req, res)
 })
