@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const { auth } = require("./verifyToken")
-const { getAppointmentById, updateAppointmentById, getAppointments, getVerificationContent } = require("../controller/clientController")
+const { getAppointmentById, updateAppointmentById, getAppointments, getVerificationContent, getTerminalById } = require("../controller/clientController")
 
 // Get Client/Appointment/{id}
 router.get("/appointment/:appointmentId", async (req, res) => {
@@ -23,5 +23,13 @@ router.get("/terminal/verificationContent/:terminalId",
  async (req, res) => {
     return await getVerificationContent(req, res)
 })
+
+// Get Client/terminal/{id}
+router.get("/terminal/:terminalId", 
+// auth("CLIENT_ADMIN"),
+ async (req, res) => {
+    return await getTerminalById(req, res)
+})
+
 
 module.exports = router
