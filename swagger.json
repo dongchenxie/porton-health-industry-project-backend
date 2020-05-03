@@ -171,6 +171,78 @@
         }
       }
     },
+    "/client/terminal/{terminalId}": {
+      "parameters": [
+        {
+          "name": "terminalId",
+          "in": "path",
+          "required": true,
+          "description": "ID of terminal that we want to find",
+          "type": "string"
+        },
+        {
+          "name": "auth-token",
+          "in":"header",
+          "required":true,
+          "description": "JWT contains terminal data",
+          "type":"string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Terminal"
+        ],
+        "summary": "Get terminal with given id (under construction)",
+        "responses": {
+          "200": {
+            "description": "Terminal is found",
+            "schema": {
+              "$ref": "#/definitions/Terminal"
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete terminal with given id (under construction)",
+        "tags": [
+          "Terminal"
+        ],
+        "responses": {
+          "200": {
+            "description": "Terminal is deleted",
+            "schema": {
+              "$ref": "#/definitions/Terminal"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update terminal with given id (under construction)",
+        "tags": [
+          "Terminal"
+        ],
+        "parameters": [
+          {
+            "name": "terminal",
+            "in": "body",
+            "description": "Terminal with new values of properties",
+            "schema": {
+              "$ref": "#/definitions/Terminal"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Terminal is updated",
+            "schema": {
+              "$ref": "#/definitions/Terminal"
+            }
+          }
+        }
+      }
+    },
+
+
     "/posts":{
       "parameters": [
         {
