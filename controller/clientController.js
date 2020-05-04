@@ -1,6 +1,8 @@
 const Appointment = require("../model/Appointment");
 const Clinic = require("../model/Clinic");
 const Patient = require("../model/Patient");
+const jwt = require("jsonwebtoken")
+
 const User = require("../model/User");
 const VerificationContent = require("../model/VerificationContent");
 const Terminal = require("../model/Terminal");
@@ -9,6 +11,7 @@ const {
   updateAppointmentValidation,
   getAppointmentsValidation,
   getTerminalsValidation,
+  updateTerminalValidation
 } = require("../component/validation");
 
 const getAppointmentById = async (req, res) => {
@@ -236,8 +239,11 @@ const getTerminalById = async (req, res) => {
     const verificationContent = await VerificationContent.findById(
       terminal.verificationContent
     );
-    return res.status(200).send(terminal + verificationContent);
-  } catch (err) {
+    console.log(terminal)
+     console.log(verificationContent)
+
+     return res.status(200).send({terminal: terminal , verificationContent: verificationContent});
+    } catch (err) {
     return res.status(400).send({ error: "Invalid data request." });
   }
 };
@@ -295,6 +301,96 @@ const getTerminals = async (req, res) => {
   }
 };
 
+
+const updateTerminalById = async (req, res) => {
+  const { error } = updateTerminalValidation(req.body)
+  if (error) {
+      return res.status(400).send(error.details[0].message)
+  }
+  const { terminalId } = req.params
+  let terminal = {}
+  // Check if terminal exists
+  try {
+      terminal = await Terminal.findById(terminalId)
+  } catch (err) {
+      console.log(err)
+      return res.status(400).send({ error: "Invalid terminal ID." })
+  }
+  if (terminal.status == "DELETED") {
+      return res.status(400).send({ error: "Updating deleted terminal is not allowed." })
+  }
+  // Find verification content
+  try {
+      if (req.body.verificationContent) {
+          await VerificationContent.findByIdAndUpdate(terminal.verificationContent, JSON.parse(req.body.verificationContent))
+      }
+  } catch (err) {
+      return res.status(400).send({ error: "Failed to update verification content." })
+  }
+  // Update clinic and verfication content in terminal
+  let json = {}
+  if (req.body.name) {
+      json.name = req.body.name
+  }
+  if (req.body.status) {
+      json.status = req.body.status
+  }
+  try {
+      await terminal.update(json)
+      await terminal.save()
+      terminal = await Terminal.findById(terminal._id).populate('verificationContent', '-__v -_id').select('-__v').exec()
+      return res.status(200).send(terminal)
+  } catch (err) {
+      console.log(err)
+      return res.status(400).send({ error: "Failed to update terminal." })
+  }
+}
+
+
+const createTerminal = async (req, res) => {
+  const { terminalName } = req.params;
+  try {
+    const terminalExists = await Terminal.findOne({
+      name: terminalName,
+      status: 'DISABLED'
+    }) + await Terminal.findOne({
+      name: terminalName,
+      status: 'ENABLED'
+    });
+    if (terminalExists) {
+      return res.status(400).send({ error: "The Terminal is already exists." });
+  } 
+  }catch (err) {
+    return res.status(400).send({ error: "Invalid Terminal Name." });
+  }
+
+    //Create token
+    const exprieDate = new Date()
+    exprieDate.setDate(exprieDate.getDate() + 14)
+    const token = jwt.sign({ _id: terminalName.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
+    const verificationContent = new VerificationContent()
+
+
+  const terminal = new Terminal({
+    name: terminalName,
+    verificationContent: verificationContent._id,
+    token: token,
+    creationDate: Date.now(),
+    status: "DISABLED",
+    // verificationContent: ,
+    // clinic: ,
+  });
+  
+
+  try {
+    terminal.save();
+    return res.status(201).send(terminal);
+  } catch (err) {
+    return res.status(400).send({ error: err });
+  }
+};
+
+
 module.exports.getAppointmentById = getAppointmentById;
 module.exports.updateAppointmentById = updateAppointmentById;
 module.exports.getAppointments = getAppointments;
@@ -302,3 +398,5 @@ module.exports.getTerminals = getTerminals;
 module.exports.deleteTerminal = deleteTerminal;
 module.exports.getVerificationContent = getVerificationContent;
 module.exports.getTerminalById = getTerminalById;
+module.exports.updateTerminalById = updateTerminalById
+module.exports.createTerminal = createTerminal;
