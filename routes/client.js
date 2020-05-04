@@ -1,6 +1,6 @@
 const router = require("express").Router()
 
-const { getAppointmentById, deleteTerminal, updateAppointmentById, getAppointments, getTerminals, getVerificationContent, getTerminalById, getTerminals, updateTerminalById  } = require("../controller/clientController")
+const { getAppointmentById, deleteTerminal, updateAppointmentById, getAppointments, getVerificationContent, getTerminalById, getTerminals, updateTerminalById  } = require("../controller/clientController")
 
 const { auth } = require("./verifyToken")
 
