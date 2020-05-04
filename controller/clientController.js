@@ -72,6 +72,7 @@ const createTerminal = async (req, res) => {
     token: token,
     creationDate: Date.now(),
     status: "DISABLED",
+    
     // verificationContent: ,
     // clinic: ,
   });
