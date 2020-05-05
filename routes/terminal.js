@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const { terminalAuth } = require('./terminalToken')
-const { login, getAppointmentById } = require('../controller/terminalController')
+const { login, getAppointmentById, getAppointments } = require('../controller/terminalController')
 
 // Post Terminal/Login
 router.post("/login", async (req, res) => {
@@ -10,6 +10,11 @@ router.post("/login", async (req, res) => {
 // Get Terminal/Appointment/{id}
 router.get("/appointment/:appointmentId", terminalAuth, async (req, res) => {
     return await getAppointmentById(req, res)
+})
+
+// Get Terminal/Appointments
+router.get("/appointments", terminalAuth, async (req, res) => {
+    return await getAppointments(req, res)
 })
 
 // Get Terminal/test

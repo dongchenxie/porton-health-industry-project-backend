@@ -99,6 +99,15 @@ const updateTerminalValidation = data => {
     return schema.validate(data)
 }
 
+const getTerminalAppointmentsValidation = data => {
+    const schema = Joi.object({
+        page: Joi.number().integer().min(1),
+        perPage: Joi.number().integer().min(1),
+        min_ahead: Joi.number().integer().min(1)
+    })
+    return schema.validate(data)
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateValidation = updateValidation;
@@ -110,4 +119,5 @@ module.exports.updateAppointmentValidation = updateAppointmentValidation;
 module.exports.getAppointmentsValidation = getAppointmentsValidation;
 module.exports.getTerminalsValidation = getTerminalsValidation;
 module.exports.updateTerminalValidation = updateTerminalValidation;
+module.exports.getTerminalAppointmentsValidation = getTerminalAppointmentsValidation;
 
