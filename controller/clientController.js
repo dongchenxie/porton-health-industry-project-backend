@@ -51,7 +51,7 @@ const deleteTerminal = async (req, res) => {
 
 const createTerminal = async (req, res) => {
   const { terminalName } = req.params;
-  // const userId = req.user._id;
+  const userId = req.user._id;
   try {
     const terminalExists =
       (await Terminal.findOne({
@@ -95,8 +95,7 @@ const createTerminal = async (req, res) => {
 
   const verificationContent = new VerificationContent();
 
-  // const user = await User.findById(userId);
-  // console.log(user.clinic)
+  const user = await User.findById(userId);
 
   const terminal = new Terminal({
     name: terminalName,
@@ -104,7 +103,7 @@ const createTerminal = async (req, res) => {
     creationDate: Date.now(),
     status: "DISABLED",
     verificationContent: verificationContent._id,
-    // clinic: user.clinic,
+    clinic: user.clinic,
   });
 
   try {

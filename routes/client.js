@@ -80,7 +80,9 @@ router.get(
 );
 
 // Get Client/Terminals
-router.get("/terminals", auth("CLIENT_ADMIN"), async (req, res) => {
+router.get("/terminals", 
+auth("CLIENT_ADMIN"), 
+async (req, res) => {
   return await getTerminals(req, res);
 });
 
