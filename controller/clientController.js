@@ -102,16 +102,14 @@ const updateAppointmentById = async (req, res) => {
   }
   // Update clinic and patient in appointment
   try {
-    await appointment.update({
-      appointmentTime: req.body.appointmentTime,
-      doctorName: req.body.doctorName,
-      reason: req.body.reason,
-      status: req.body.status,
-      comment: req.body.comment,
-      clinic: req.body.clinic,
-      patient: req.body.patient,
-    });
-    await appointment.save();
+    appointment.appointmentTime = req.body.appointmentTime
+    appointment.doctorName = req.body.doctorName
+    appointment.reason = req.body.reason
+    appointment.status = req.body.status
+    appointment.comment = req.body.comment
+    appointment.clinic = req.body.clinic
+    appointment.patient = req.body.patient
+    await appointment.save()
     return res.status(200).send(appointment);
   } catch (err) {
     return res.status(400).send({ error: "Failed to update appointment." });

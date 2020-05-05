@@ -1,8 +1,9 @@
 const Terminal = require('../model/Terminal')
 const Appointment = require("../model/Appointment")
 const Patient = require('../model/Patient')
+const VerificationContent = require('../model/VerificationContent')
 const jwt = require('jsonwebtoken')
-const { getTerminalAppointmentsValidation } = require('../component/validation')
+const { getTerminalAppointmentsValidation, terminalCheckInValidation } = require('../component/validation')
 
 const login = async (req, res) => {
     const { token } = req.body
@@ -46,7 +47,7 @@ const getAppointments = async (req, res) => {
     const { page = 1, perPage = 10, min_ahead = 15 } = req.query
     const _page = Number(page)
     const _perPage = Number(perPage)
-    const currentTime = new Date("2020-04-11T01:51:55.596Z")
+    const currentTime = Date.now()
     let appointmentTime = new Date(currentTime)
     appointmentTime.setMinutes(appointmentTime.getMinutes() + min_ahead)
 
@@ -102,6 +103,53 @@ const getAppointments = async (req, res) => {
     }
 }
 
+const checkIn = async (req, res) => {
+    const { appointmentId, content } = req.body
+    const _content = JSON.parse(content)
+    let appointment = {}
+    let terminal = {}
+    try {
+        appointment = await Appointment
+            .findById(appointmentId)
+            .populate('patient', '-__v -appointments')
+            .select('-__v')
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Invalid appointment ID." })
+    }
+
+    try {
+        terminal = await Terminal
+            .findById(req.terminal._id)
+            .populate('verificationContent')
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ error: "Invalid terminal ID." })
+    }
+
+    const { error } = terminalCheckInValidation(_content, terminal.verificationContent)
+    if (error) {
+        return res.status(400).send(error.details[0].message)
+    }
+
+    for (let key in terminal.verificationContent) {
+        if (terminal.verificationContent[key] == true) {
+            if (_content[key] && _content[key].toString().toUpperCase() != appointment.patient[key].toString().toUpperCase()) {
+                return res.status(400).send({ error: "Check-in information is not correct." })
+            }
+        }
+    }
+
+    try {
+        appointment.status = "CHECK_IN"
+        await appointment.save()
+        return res.status(200).send(appointment)
+    } catch (err) {
+        return res.status(400).send({ error: "Faild to check in." })
+    }
+}
+
 module.exports.login = login
 module.exports.getAppointmentById = getAppointmentById
 module.exports.getAppointments = getAppointments
+module.exports.checkIn = checkIn

@@ -108,6 +108,54 @@ const getTerminalAppointmentsValidation = data => {
     return schema.validate(data)
 }
 
+const terminalCheckInValidation = (data, verificationContent) => {
+    const schema = Joi.object({
+        firstName: Joi.string().min(1).max(255)
+            .when('$firstName', {
+                is: Joi.boolean().valid(true).required(),
+                then: Joi.required(),
+                otherwise: Joi.optional()
+            }),
+        lastName: Joi.string().min(1).max(255)
+            .when('$lastName', {
+                is: Joi.boolean().valid(true).required(),
+                then: Joi.required(),
+                otherwise: Joi.optional()
+            }),
+        phoneNumber: Joi.string().min(1).max(255)
+            .when('$phoneNumber', {
+                is: Joi.boolean().valid(true).required(),
+                then: Joi.required(),
+                otherwise: Joi.optional()
+            }),
+        phoneNumberLast4: Joi.string().min(4).max(4)
+            .when('$phoneNumberLast4', {
+                is: Joi.boolean().valid(true).required(),
+                then: Joi.required(),
+                otherwise: Joi.optional()
+            }),
+        careCardNumber: Joi.string().min(1).max(255)
+            .when('$careCardNumber', {
+                is: Joi.boolean().valid(true).required(),
+                then: Joi.required(),
+                otherwise: Joi.optional()
+            }),
+        careCardLast4: Joi.string().min(4).max(4)
+            .when('$careCardLast4', {
+                is: Joi.boolean().valid(true).required(),
+                then: Joi.required(),
+                otherwise: Joi.optional()
+            }),
+        dateOfBirth: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).messages({ "string.pattern.base": "Date of brith format error. Please follow the format: YYYY-MM-DD." })
+            .when('$dateOfBirth', {
+                is: Joi.boolean().valid(true).required(),
+                then: Joi.required(),
+                otherwise: Joi.optional()
+            })
+    })
+    return schema.validate(data, { context: verificationContent })
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateValidation = updateValidation;
@@ -120,4 +168,5 @@ module.exports.getAppointmentsValidation = getAppointmentsValidation;
 module.exports.getTerminalsValidation = getTerminalsValidation;
 module.exports.updateTerminalValidation = updateTerminalValidation;
 module.exports.getTerminalAppointmentsValidation = getTerminalAppointmentsValidation;
+module.exports.terminalCheckInValidation = terminalCheckInValidation;
 
