@@ -51,7 +51,6 @@ const deleteTerminal = async (req, res) => {
 
 const createTerminal = async (req, res) => {
   const { terminalName } = req.params;
-  // const userId = "5eb10f315785e30bb0a9bd59"
   const userId = req.user._id
   console.log (userId)
  
