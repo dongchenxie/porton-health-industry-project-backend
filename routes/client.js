@@ -45,7 +45,7 @@ router.delete(
 // Post Client/Terminal
 router.post(
   "/terminal/:terminalName",
-  auth("CLIENT_ADMIN"),
+  // auth("CLIENT_ADMIN"),
   async (req, res) => {
     return await createTerminal(req, res);
   }

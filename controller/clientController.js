@@ -4,10 +4,14 @@ const Patient = require("../model/Patient");
 const User = require("../model/User");
 const VerificationContent = require("../model/VerificationContent");
 const Terminal = require("../model/Terminal");
-const mongoose = require('mongoose')
-const jwt = require("jsonwebtoken")
-const { updateAppointmentValidation, getAppointmentsValidation, getTerminalsValidation,
-  updateTerminalValidation,  } = require('../component/validation')
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const {
+  updateAppointmentValidation,
+  getAppointmentsValidation,
+  getTerminalsValidation,
+  updateTerminalValidation,
+} = require("../component/validation");
 
 const getAppointmentById = async (req, res) => {
   const { appointmentId } = req.params;
@@ -47,34 +51,60 @@ const deleteTerminal = async (req, res) => {
 
 const createTerminal = async (req, res) => {
   const { terminalName } = req.params;
+  // const userId = req.user._id;
   try {
-    const terminalExists = await Terminal.findOne({
-      name: terminalName,
-      status: 'DISABLED'
-    }) + await Terminal.findOne({
-      name: terminalName,
-      status: 'ENABLED'
-    });
+    const terminalExists =
+      (await Terminal.findOne({
+        name: terminalName,
+        status: "DISABLED",
+      })) +
+      (await Terminal.findOne({
+        name: terminalName,
+        status: "ENABLED",
+      }));
     if (terminalExists) {
       return res.status(400).send({ error: "The Terminal is already exists." });
-  } 
-  }catch (err) {
+    }
+  } catch (err) {
     return res.status(400).send({ error: "Invalid Terminal Name." });
   }
 
-    //Create token
-    const exprieDate = new Date()
-    exprieDate.setDate(exprieDate.getDate() + 14)
-    const token = jwt.sign({ _id: terminalName.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
+  //Create token //shorten token
+  const maxTokenAttempt = 6;
+  for (var i = 0; i < maxTokenAttempt; i++) {
+    const token2 = String(
+      Math.floor(Math.random() * 1000000) + 1000000
+    ).substring(1, 7);
+    try {
+      const tokenExists = await Terminal.findOne({
+        token: token2,
+      });
+      if (tokenExists) {
+        console.log("Token Exists");
+        if (i == maxTokenAttempt - 1) {
+          return res.status(400).send({ error: "Toke Creation Failed." });
+        }
+      } else {
+        i = maxTokenAttempt;
+        var token = token2
+      }
+    } catch (err) {
+      return res.status(400).send({ error: "Invalid Terminal request." });
+    }
+  }
+
+  const verificationContent = new VerificationContent();
+
+  // const user = await User.findById(userId);
+  // console.log(user.clinic)
 
   const terminal = new Terminal({
     name: terminalName,
     token: token,
     creationDate: Date.now(),
     status: "DISABLED",
-    
-    // verificationContent: ,
-    // clinic: ,
+    verificationContent: verificationContent._id,
+    // clinic: user.clinic,
   });
 
   try {
@@ -84,8 +114,6 @@ const createTerminal = async (req, res) => {
     return res.status(400).send({ error: err });
   }
 };
-
-
 
 const updateAppointmentById = async (req, res) => {
   const { error } = updateAppointmentValidation(req.body);
@@ -264,7 +292,7 @@ const getAppointments = async (req, res) => {
 
 const getVerificationContent = async (req, res) => {
   const { terminalId } = req.params;
-  
+
   try {
     let terminal = await Terminal.aggregate([
       {
@@ -284,11 +312,9 @@ const getVerificationContent = async (req, res) => {
     ]);
 
     if (terminal == "") {
-    return res
-      .status(400)
-      .send({ error: "No Active Terminal" });
-  }
-  return res.status(200).send({ terminal });
+      return res.status(400).send({ error: "No Active Terminal" });
+    }
+    return res.status(200).send({ terminal });
   } catch (err) {
     return res.status(400).send({ error: "Invalid data request." });
   }
@@ -318,7 +344,6 @@ const getTerminalById = async (req, res) => {
     return res.status(400).send({ error: "Invalid data request." });
   }
 };
-
 
 const getTerminals = async (req, res) => {
   const { error } = getTerminalsValidation(req.query);
@@ -447,5 +472,3 @@ module.exports.createTerminal = createTerminal;
 module.exports.updateTerminalById = updateTerminalById;
 
 module.exports.getVerificationContent = getVerificationContent;
-
-
