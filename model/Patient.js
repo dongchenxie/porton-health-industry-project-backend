@@ -7,9 +7,6 @@ const patientSchema = new mongoose.Schema({
     firstName: {
         type: String
     },
-    age: {
-        type: Number
-    },
     gender: {
         type: String,
         enum: ['MALE', 'FEMALE', 'OTHER']
@@ -27,6 +24,9 @@ const patientSchema = new mongoose.Schema({
         type: String
     },
     comment: {
+        type: String
+    },
+    dateOfBirth: {
         type: String
     },
     appointments: [{

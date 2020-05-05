@@ -15,9 +15,10 @@ const {
 const getAppointmentById = async (req, res) => {
   const { appointmentId } = req.params;
   try {
-    const appointment = await Appointment.findById(appointmentId).select(
-      "-__v"
-    );
+    const appointment = await Appointment
+      .findById(appointmentId)
+      .populate("patient", "-appointments -__v")
+      .select("-__v")
     return res.status(200).send(appointment);
   } catch (err) {
     return res.status(400).send({ error: "Invalid appointment ID." });
@@ -101,16 +102,14 @@ const updateAppointmentById = async (req, res) => {
   }
   // Update clinic and patient in appointment
   try {
-    await appointment.update({
-      appointmentTime: req.body.appointmentTime,
-      doctorName: req.body.doctorName,
-      reason: req.body.reason,
-      status: req.body.status,
-      comment: req.body.comment,
-      clinic: req.body.clinic,
-      patient: req.body.patient,
-    });
-    await appointment.save();
+    appointment.appointmentTime = req.body.appointmentTime
+    appointment.doctorName = req.body.doctorName
+    appointment.reason = req.body.reason
+    appointment.status = req.body.status
+    appointment.comment = req.body.comment
+    appointment.clinic = req.body.clinic
+    appointment.patient = req.body.patient
+    await appointment.save()
     return res.status(200).send(appointment);
   } catch (err) {
     return res.status(400).send({ error: "Failed to update appointment." });
@@ -198,7 +197,7 @@ const getAppointments = async (req, res) => {
             { $sort: sorter },
             { $skip: (_page - 1) * _perPage },
             { $limit: _perPage },
-            { $project: { __v: 0, "patient.__v": 0 } },
+            { $project: { __v: 0, "patient.__v": 0, "patient.appointments": 0 } },
           ],
         },
       },
@@ -225,7 +224,7 @@ const getAppointments = async (req, res) => {
 
 const getVerificationContent = async (req, res) => {
   const { terminalId } = req.params;
-  
+
   try {
     let terminal = await Terminal.aggregate([
       {
@@ -245,11 +244,11 @@ const getVerificationContent = async (req, res) => {
     ]);
 
     if (terminal == "") {
-    return res
-      .status(400)
-      .send({ error: "No Active Terminal" });
-  }
-  return res.status(200).send({ terminal });
+      return res
+        .status(400)
+        .send({ error: "No Active Terminal" });
+    }
+    return res.status(200).send({ terminal });
   } catch (err) {
     return res.status(400).send({ error: "Invalid data request." });
   }

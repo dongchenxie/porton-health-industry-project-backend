@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 const verificationContentSchema = new mongoose.Schema({
     firstName: {
         type: Boolean,
-        default: true
+        default: false
     },
     lastName: {
         type: Boolean,
@@ -24,6 +24,10 @@ const verificationContentSchema = new mongoose.Schema({
     careCardLast4: {
         type: Boolean,
         default: false
+    },
+    dateOfBirth: {
+        type: Boolean,
+        default: true
     }
 })
 
