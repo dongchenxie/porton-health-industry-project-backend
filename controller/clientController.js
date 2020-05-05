@@ -51,9 +51,11 @@ const deleteTerminal = async (req, res) => {
 
 const createTerminal = async (req, res) => {
   const { terminalName } = req.params;
-  const userId = req.user._id
-  console.log (userId)
- 
+  const userId = req.user._id;
+  const verificationContent = new VerificationContent();
+  const user = await User.findById(userId);
+  console.log(userId);
+
   try {
     const terminalExists =
       (await Terminal.findOne({
@@ -72,11 +74,16 @@ const createTerminal = async (req, res) => {
   }
 
   //Create token //shorten token
+
   const maxTokenAttempt = 6;
   for (var i = 0; i < maxTokenAttempt; i++) {
     const token2 = String(
-      Math.floor(Math.random() * 1000000) + 1000000
-    ).substring(1, 7);
+      jwt.sign(
+        { _id: String((Math.random() * 1000000)+1000000).substring(1, 7)},
+        process.env.TOKEN_SECRET
+      )
+    )
+    .substring(100, 106).toUpperCase()
     try {
       const tokenExists = await Terminal.findOne({
         token: token2,
@@ -88,14 +95,12 @@ const createTerminal = async (req, res) => {
         }
       } else {
         i = maxTokenAttempt;
-        var token = token2
+        var token = token2;
       }
     } catch (err) {
       return res.status(400).send({ error: "Invalid Terminal request." });
     }
   }
-  const verificationContent = new VerificationContent();
-  const user = await User.findById(userId);
 
   const terminal = new Terminal({
     name: terminalName,
