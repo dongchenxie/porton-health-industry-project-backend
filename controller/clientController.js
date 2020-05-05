@@ -51,7 +51,9 @@ const deleteTerminal = async (req, res) => {
 
 const createTerminal = async (req, res) => {
   const { terminalName } = req.params;
-  const userId = req.user._id;
+  const userId = "5eb10f315785e30bb0a9bd59"
+  console.log (userId)
+  //_id: mongoose.Types.ObjectId(terminalId),
   try {
     const terminalExists =
       (await Terminal.findOne({
