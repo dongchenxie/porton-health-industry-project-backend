@@ -51,9 +51,10 @@ const deleteTerminal = async (req, res) => {
 
 const createTerminal = async (req, res) => {
   const { terminalName } = req.params;
-  const userId = "5eb10f315785e30bb0a9bd59"
+  // const userId = "5eb10f315785e30bb0a9bd59"
+  const userId = req.user._id
   console.log (userId)
-  //_id: mongoose.Types.ObjectId(terminalId),
+ 
   try {
     const terminalExists =
       (await Terminal.findOne({
@@ -94,9 +95,7 @@ const createTerminal = async (req, res) => {
       return res.status(400).send({ error: "Invalid Terminal request." });
     }
   }
-
   const verificationContent = new VerificationContent();
-
   const user = await User.findById(userId);
 
   const terminal = new Terminal({

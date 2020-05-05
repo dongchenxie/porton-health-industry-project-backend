@@ -9,7 +9,6 @@ const usersRoute = require("./routes/users")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
 const terminalRoute = require("./routes/terminal")
-const User = require("./model/User");
 
 const swaggerOptions={
     swaggerDefinition: {
@@ -41,20 +40,6 @@ app.use("/api/users", usersRoute)
 app.use("/api/clinics", clinicsRoute)
 app.use("/api/client", clientRoute)
 app.use("/api/terminal", terminalRoute)
-
-//   const user = new User({
-//     date: Date.now(),
-//     role: "CLIENT_ADMIN",
-//     firstName: "BMO",
-//     lastName: "BMO",
-//     email: "BMO@BMO.com",
-//     isEnabled: true,
-//     password: "$2a$10$e6ahzUN.7IhWodsTKG03FuEBuTwUZx7bk8U8oTFgyW8IoFvlQpfuq",
-//     creationDate: Date.now(),
-//     clinic: mongoose.Types.ObjectId("5ea9186d4a33612928dc0b3e"),
-//   });
-
-//     user.save()
 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
