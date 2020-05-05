@@ -54,7 +54,7 @@ const createTerminal = async (req, res) => {
   const userId = req.user._id;
   const verificationContent = new VerificationContent();
   const user = await User.findById(userId);
-  console.log(userId);
+  // console.log(userId);
 
   try {
     const terminalExists =
