@@ -100,8 +100,8 @@ const getAppointments = async (req, res) => {
             {
                 $match: {
                     clinic: terminal.clinic,
-                    appointmentTime: { $gte: currentTime, $lte: appointmentTime },
-                    status: "PENDING"
+                    // appointmentTime: { $gte: currentTime, $lte: appointmentTime },
+                    // status: "PENDING"
                 }
             },
             {
@@ -139,18 +139,30 @@ const getAppointments = async (req, res) => {
 }
 
 const checkIn = async (req, res) => {
-    const { appointmentId, content } = req.body
-    const _content = JSON.parse(content)
-    let appointment = {}
-    let terminal = {}
+        const { appointmentId, content } = req.body
+        if(!req.body||!content||!appointmentId){
+            return res.status(400).send({ error: "Missing request body" })
+        }
+        let_content = ""
+        let appointment = {}
+        let terminal = {}
+        try{
+            _content = JSON.parse(content)
+           
+        }catch (err) {
+            return res.status(400).send("request body parse error")
+        }
+        
+   
     try {
+        
         appointment = await Appointment
             .findById(appointmentId)
             .populate('patient', '-__v -appointments')
             .select('-__v')
     } catch (err) {
         console.log(err)
-        return res.status(400).send({ error: "Invalid appointment ID." })
+        return res.status(400).send({ error: "Invalid appointment ID or request body." })
     }
 
     try {
