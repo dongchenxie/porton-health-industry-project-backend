@@ -156,6 +156,48 @@ const terminalCheckInValidation = (data, verificationContent) => {
     return schema.validate(data, { context: verificationContent })
 }
 
+const appointmentsReportValidation = data => {
+    const schema = Joi.object({
+        appointmentTime: Joi.boolean(),
+        lastName: Joi.boolean(),
+        phoneNumber: Joi.boolean(),
+        gender: Joi.boolean(),
+        careCardNumber: Joi.boolean(),
+        clinic: Joi.boolean(),
+        status: Joi.boolean(),
+        comment: Joi.boolean(),
+        clinic_id: Joi.string().min(1).max(255),
+        page: Joi.number().integer().min(1),
+        perPage: Joi.number().integer().min(1),
+        start_date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).messages({ "string.pattern.base": "Date format error. Please follow the format: YYYY-MM-DD." }),
+        end_date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).messages({ "string.pattern.base": "Date format error. Please follow the format: YYYY-MM-DD." }),
+        sort_by: Joi.string().pattern(/^(appointmentTime.asc|appointmentTime.desc|patient.phoneNumber.asc|patient.phoneNumber.desc|patient.gender.asc|patient.gender.desc|patient.lastName.asc|patient.lastName.desc|patient.careCardNumber.asc|patient.careCardNumber.desc|status.asc|status.desc)$/).messages({ "string.pattern.base": "Sorter is undefined." })
+    })
+    return schema.validate(data)
+}
+
+const patientsReportValidation = data => {
+    const schema = Joi.object({
+        firstName: Joi.boolean(),
+        lastName: Joi.boolean(),
+        age: Joi.boolean(),
+        gender: Joi.boolean(),
+        careCardNumber: Joi.boolean(),
+        mrp: Joi.boolean(),
+        last_visit: Joi.boolean(),
+        phoneNumber: Joi.boolean(),
+        number_of_visits: Joi.boolean(),
+        comment: Joi.boolean(),
+        page: Joi.number().integer().min(1),
+        perPage: Joi.number().integer().min(1),
+        clinic_id: Joi.string().min(1).max(255),
+        start_date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).messages({ "string.pattern.base": "Date format error. Please follow the format: YYYY-MM-DD." }),
+        end_date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).messages({ "string.pattern.base": "Date format error. Please follow the format: YYYY-MM-DD." }),
+        sort_by: Joi.string().pattern(/^(firstName.asc|firstName.desc|phoneNumber.asc|phoneNumber.desc|lastName.asc|lastName.desc|careCardNumber.asc|careCardNumber.desc|gender.asc|gender.desc|mrp.asc|mrp.desc|dateOfBirth.asc|dateOfBirth.desc|last_visit.asc|last_visit.desc|number_of_visits.asc|number_of_visits.desc)$/).messages({ "string.pattern.base": "Sorter is undefined." })
+    })
+    return schema.validate(data)
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateValidation = updateValidation;
@@ -170,3 +212,5 @@ module.exports.updateTerminalValidation = updateTerminalValidation;
 module.exports.getTerminalAppointmentsValidation = getTerminalAppointmentsValidation;
 module.exports.terminalCheckInValidation = terminalCheckInValidation;
 
+module.exports.appointmentsReportValidation = appointmentsReportValidation
+module.exports.patientsReportValidation = patientsReportValidation
