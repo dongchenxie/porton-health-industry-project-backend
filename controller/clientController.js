@@ -75,7 +75,7 @@ const createTerminal = async (req, res) => {
   }
 
   //Create token //shorten token
-  const maxTokenAttempt = await Terminal.count()
+  const maxTokenAttempt = await Terminal.countDocuments()
   for (var i = 0; i < maxTokenAttempt; i++) {
     const token2 = String(
       jwt.sign(
