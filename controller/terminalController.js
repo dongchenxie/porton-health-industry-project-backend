@@ -1,7 +1,6 @@
 const Terminal = require('../model/Terminal')
 const Appointment = require("../model/Appointment")
 const Patient = require('../model/Patient')
-const VerificationContent = require('../model/VerificationContent')
 const jwt = require('jsonwebtoken')
 const { getTerminalAppointmentsValidation, terminalCheckInValidation } = require('../component/validation')
 
