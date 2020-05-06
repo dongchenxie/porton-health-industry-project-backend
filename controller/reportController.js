@@ -8,15 +8,7 @@ const getAppointments = async (req, res) => {
         return res.status(400).send(error.details[0].message)
     }
 
-    const { lastName = true, appointmentTime = true, phoneNumber = true, careCardNumber = true, gender = true, status = true, comment = true, clinic = true, clinic_id, sort_by = 'patient.lastName.asc', page = 1, perPage = 10, start_date, end_date } = req.query
-    const _lastName = lastName && lastName == 'false' ? 0 : 1
-    const _appointmentTime = appointmentTime && appointmentTime == 'false' ? 0 : 1
-    const _phoneNumber = phoneNumber && phoneNumber == 'false' ? 0 : 1
-    const _careCardNumber = careCardNumber && careCardNumber == 'false' ? 0 : 1
-    const _gender = gender && gender == 'false' ? 0 : 1
-    const _status = status && status == 'false' ? 0 : 1
-    const _comment = comment && comment == 'false' ? 0 : 1
-    const _clinic = clinic && clinic == 'false' ? 0 : 1
+    const { clinic_id, sort_by = 'patient.lastName.asc', page = 1, perPage = 10, start_date, end_date } = req.query
     const _page = Number(page)
     const _perPage = Number(perPage)
     let sorter = {}
@@ -39,66 +31,46 @@ const getAppointments = async (req, res) => {
     }
 
     const matchHelper = (clinic_id) => {
-        if (!clinic_id) {
-            return (
-                {
-                    $match: {
-                        appointmentTime: { $gte: startDate, $lte: endDate }
-                    }
-                }
-            )
-        } else {
-            return (
-                {
-                    $match: {
-                        clinic: mongoose.Types.ObjectId(clinic_id),
-                        appointmentTime: { $gte: startDate, $lte: endDate }
-                    }
-                }
-            )
+        let matchObject = {
+            $match: {
+                appointmentTime: { $gte: startDate, $lte: endDate }
+            }
         }
+
+        if (clinic_id) {
+            matchObject.$match.clinic = mongoose.Types.ObjectId(clinic_id)
+        }
+
+        return matchObject
     }
 
-    const projectHelper = (lastName) => {
-        
-        if (lastName && lastName == 'false') {
-            return (
-                {
-                    $project: {
-                        __v: 0,
-                        "patient.__v": 0,
-                        "patient.appointments": 0,
-                        "patient.lastName": 0,
-                        // "patient.phoneNumber": _phoneNumber,
-                        // "patient.careCardNUmber": _careCardNumber,
-                        // "patient.gender": _gender,
-                        // "status": _status,
-                        // "comment": _comment,
-                        // "appointmentTime": _appointmentTime,
-                        // "clinic": _clinic
-                    }
-                }
-            )
-        } else {
-            return (
-                {
-                    $project: {
-                        __v: 0,
-                        "patient.__v": 0,
-                        "patient.appointments": 0,
-                        "patient.lastName": 1,
-                        // "patient.phoneNumber": _phoneNumber,
-                        // "patient.careCardNUmber": _careCardNumber,
-                        // "patient.gender": _gender,
-                        // "status": _status,
-                        // "comment": _comment,
-                        // "appointmentTime": _appointmentTime,
-                        // "clinic": _clinic
-                    }
-                }
-            )
+    const projectHelper = (query) => {
+        const nameMap = {
+            lastName: 'patient.lastName',
+            appointmentTime: 'appoimentTime',
+            phoneNumber: 'patient.phoneNumber',
+            careCardNUmber: 'patient.careCardNumber',
+            gender: 'patient.gender',
+            status: 'status',
+            comment: 'comment',
+            clinic: 'clinic'
         }
 
+        let projectObject = {
+            $project: {
+                __v: 0,
+                "patient.__v": 0,
+                "patient.appointments": 0
+            }
+        }
+
+        for (let key in query) {
+            if (req.query[key] == 'false') {
+                projectObject.$project[nameMap[key]] = 0
+            }
+        }
+
+        return projectObject
     }
 
     try {
@@ -121,22 +93,7 @@ const getAppointments = async (req, res) => {
                         { $sort: sorter },
                         { $skip: (_page - 1) * _perPage },
                         { $limit: _perPage },
-                        projectHelper(lastName)
-                        // {
-                        //     $project: {
-                        //         __v: 0,
-                        //         "patient.__v": 0,
-                        //         "patient.appointments": 0,
-                        //         "patient.lastName": convert(lastName),
-                        //         // "patient.phoneNumber": _phoneNumber,
-                        //         // "patient.careCardNUmber": _careCardNumber,
-                        //         // "patient.gender": _gender,
-                        //         // "status": _status,
-                        //         // "comment": _comment,
-                        //         // "appointmentTime": _appointmentTime,
-                        //         // "clinic": _clinic
-                        //     }
-                        // }
+                        projectHelper(req.query)
                     ]
                 }
             }
