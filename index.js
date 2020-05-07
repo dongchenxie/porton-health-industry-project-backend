@@ -46,7 +46,6 @@ app.use("/api/client", clientRoute)
 app.use("/api/terminal", terminalRoute)
 app.use("/api/report", reportRoute)
 
-
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 
@@ -55,3 +54,4 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(3333, () => {
     console.log("server runing at port 3333")
 })
+

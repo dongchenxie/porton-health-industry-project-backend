@@ -80,6 +80,7 @@ const getAppointmentsValidation = data => {
     return schema.validate(data)
 }
 
+
 const getTerminalsValidation = data => {
     const schema = Joi.object({
         search: Joi.string().min(1).max(255),
@@ -204,6 +205,7 @@ module.exports.updateValidation = updateValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
 module.exports.getUsersValidation = getUsersValidation;
 module.exports.updatePermission = updatePermission;
+
 
 module.exports.updateAppointmentValidation = updateAppointmentValidation;
 module.exports.getAppointmentsValidation = getAppointmentsValidation;

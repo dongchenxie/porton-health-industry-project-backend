@@ -5,6 +5,7 @@ const User = require("../model/User");
 const VerificationContent = require("../model/VerificationContent");
 const Terminal = require("../model/Terminal");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const {
   updateAppointmentValidation,
   getAppointmentsValidation,
@@ -47,6 +48,75 @@ const deleteTerminal = async (req, res) => {
     return res.status(200).send("Terminal Deleted");
   } catch (err) {
     return res.status(400).send({ error: "Failed to update Terminal." });
+  }
+};
+
+const createTerminal = async (req, res) => {
+  const { terminalName } = req.params;
+  const userId = req.user._id;
+  const verificationContent = new VerificationContent();
+  const user = await User.findById(userId);
+  // console.log(userId);
+
+  try {
+    const terminalExists =
+      (await Terminal.findOne({
+        name: terminalName,
+        status: "DISABLED",
+      })) +
+      (await Terminal.findOne({
+        name: terminalName,
+        status: "ENABLED",
+      }));
+    if (terminalExists) {
+      return res.status(400).send({ error: "The Terminal is already exists." });
+    }
+  } catch (err) {
+    return res.status(400).send({ error: "Invalid Terminal Name." });
+  }
+
+  //Create token //shorten token
+  const maxTokenAttempt = await Terminal.countDocuments()
+  for (var i = 0; i < maxTokenAttempt; i++) {
+    const token2 = String(
+      jwt.sign(
+        { _id: String((Math.random() * 1000000)+1000000).substring(1, 7)},
+        process.env.TOKEN_SECRET
+      )
+    )
+    .substring(100, 106).toUpperCase()
+    try {
+      const tokenExists = await Terminal.findOne({
+        token: token2,
+      });
+      if (tokenExists) {
+        console.log("Token Exists");
+        if (i == maxTokenAttempt - 1) {
+          return res.status(400).send({ error: "Toke Creation Failed." });
+        }
+      } else {
+        i = maxTokenAttempt;
+        var token = token2;
+      }
+    } catch (err) {
+      return res.status(400).send({ error: "Invalid Terminal request." });
+    }
+  }
+
+  const terminal = new Terminal({
+    name: terminalName,
+    token: token,
+    creationDate: Date.now(),
+    status: "DISABLED",
+    verificationContent: verificationContent._id,
+    clinic: user.clinic,
+  });
+
+  try {
+    terminal.save();
+    return res.status(201).send("Successfully created terminal");
+  } catch (err) {
+    return res.status(400).send({ error: err });
   }
 };
 
@@ -488,11 +558,15 @@ const createDummyAppointments = async (req, res) => {
 }
 
 module.exports.getAppointmentById = getAppointmentById;
-module.exports.updateAppointmentById = updateAppointmentById;
 module.exports.getAppointments = getAppointments;
+module.exports.updateAppointmentById = updateAppointmentById;
+
 module.exports.getTerminals = getTerminals;
-module.exports.deleteTerminal = deleteTerminal;
-module.exports.updateTerminalById = updateTerminalById;
-module.exports.getVerificationContent = getVerificationContent;
 module.exports.getTerminalById = getTerminalById;
+module.exports.deleteTerminal = deleteTerminal;
+module.exports.createTerminal = createTerminal;
+module.exports.updateTerminalById = updateTerminalById;
+
+module.exports.getVerificationContent = getVerificationContent;
+
 module.exports.createDummyAppointments = createDummyAppointments;
