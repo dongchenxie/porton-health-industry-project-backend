@@ -5,12 +5,12 @@ const { getAppointmentById, deleteTerminal, updateAppointmentById, getAppointmen
 const { auth } = require("./verifyToken");
 
 // Put Client/Appointment/{id}
-router.put("/appointment/:appointmentId", async (req, res) => {
+router.put("/appointment/:appointmentId", auth("CLIENT_ADMIN"), async (req, res) => {
   return await updateAppointmentById(req, res);
 });
 
 // Get Client/Appointment/{id}
-router.get("/appointment/:appointmentId", async (req, res) => {
+router.get("/appointment/:appointmentId", auth("CLIENT_ADMIN"), async (req, res) => {
   return await getAppointmentById(req, res);
 });
 
@@ -26,10 +26,10 @@ router.get("/terminal/:terminalId", auth("CLIENT_ADMIN"), async (req, res) => {
 
 // Delete Client/Terminal/{id}
 router.delete("/terminal/:terminalId",
-    auth("CLIENT_ADMIN"),
-    async (req, res) => {
-        return await deleteTerminal(req, res)
-    })
+  auth("CLIENT_ADMIN"),
+  async (req, res) => {
+    return await deleteTerminal(req, res)
+  })
 
 // Post Client/Terminal
 router.post(
@@ -41,7 +41,7 @@ router.post(
 );
 
 // Put Client/Appointment/{id}
-router.put("/appointment/:appointmentId", async (req, res) => {
+router.put("/appointment/:appointmentId", auth("CLIENT_ADMIN"), async (req, res) => {
   return await updateAppointmentById(req, res);
 });
 
@@ -69,19 +69,19 @@ router.get(
 );
 
 // Get Client/Terminals
-router.get("/terminals", 
-auth("CLIENT_ADMIN"), 
-async (req, res) => {
-  return await getTerminals(req, res);
-});
+router.get("/terminals",
+  auth("CLIENT_ADMIN"),
+  async (req, res) => {
+    return await getTerminals(req, res);
+  });
 
 // Put Client/Terminal/{id}
-router.put("/terminal/:terminalId", async (req, res) => {
+router.put("/terminal/:terminalId", auth("CLIENT_ADMIN"), async (req, res) => {
   return await updateTerminalById(req, res);
 });
 
 // Post Client/createDummyAppointments
 router.post("/createDummyAppointments", auth("CLIENT_ADMIN"), async (req, res) => {
-    return await createDummyAppointments(req, res)
+  return await createDummyAppointments(req, res)
 })
 module.exports = router

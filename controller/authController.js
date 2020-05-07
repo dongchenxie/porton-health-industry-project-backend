@@ -2,7 +2,7 @@ const User = require("../model/User")
 const Clinic = require("../model/Clinic")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission} = require("../component/validation")
+const { registerValidation, loginValidation, updateValidation, resetPasswordValidation, getUsersValidation, updatePermission } = require("../component/validation")
 
 const registerController = async (req, res) => {
     //validation
@@ -56,7 +56,7 @@ const loginController = async (req, res) => {
     const exprieDate = new Date()
     exprieDate.setDate(exprieDate.getDate() + 14)
     console.log(exprieDate)
-    const token = jwt.sign({ _id: user.id, expire_date: exprieDate }, process.env.TOKEN_SECRET)
+    const token = jwt.sign({ _id: user.id, expire_date: exprieDate, password: user.password }, process.env.TOKEN_SECRET)
     console.log({ token: token, role: user.role })
     user.password = null
     return res.header('auth-token', token).send({ token: token, role: user.role, user: user })
@@ -182,6 +182,10 @@ const getTokenInformationController = async (req, res) => {
         if (!user) {
             res.status(400).send({ error: "Invalid Token" });
         }
+        if (user.password != verified.password) {
+            res.status(400).send("Invalid Token");
+        }
+        if (user.isEnabled == false) { return res.status(400).send({ error: "The account is not enabled." }) }
         return res.status(200).send(user)
     } catch (e) {
         res.status(400).send({ error: "Invalid Token" });
@@ -193,7 +197,7 @@ const getUsersController = async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message)
     }
-    
+
     const { page = 1, perPage = 10, sort_by = 'date.asc', search } = req.query
     const _page = Number(page)
     const _perPage = Number(perPage)
@@ -225,7 +229,7 @@ const getUsersController = async (req, res) => {
                 ]
             })
             .countDocuments()
-            
+
         return res.status(200).send({
             users,
             totalResults: total,
@@ -235,7 +239,7 @@ const getUsersController = async (req, res) => {
             nextPage: _page + 1 > Math.ceil(total / _perPage) ? null : _page + 1,
             prevPage: _page - 1 <= 0 ? null : _page - 1
         })
-        
+
     } catch (err) {
         return res.status(400).send({ error: "Failed to get users." })
     }
