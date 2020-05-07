@@ -84,7 +84,8 @@ const getAppointments = async (req, res) => {
     const _perPage = Number(perPage)
     const currentTime = new Date()
     let appointmentTime = new Date(currentTime)
-    appointmentTime.setMinutes(appointmentTime.getMinutes() + min_ahead)
+ 
+    appointmentTime.setMinutes(appointmentTime.getMinutes() +parseInt(min_ahead))
     
     try {
         const terminal = await Terminal.findById(req.terminal._id)
@@ -100,8 +101,8 @@ const getAppointments = async (req, res) => {
             {
                 $match: {
                     clinic: terminal.clinic,
-                    // appointmentTime: { $gte: currentTime, $lte: appointmentTime },
-                    // status: "PENDING"
+                    appointmentTime: { $gte: currentTime, $lte: appointmentTime },
+                    status: "PENDING"
                 }
             },
             {
