@@ -17,8 +17,9 @@ const getAppointments = async (req, res) => {
     let endDate;
     if (start_date) {
         startDate = new Date(start_date)
+        startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
     } else {
-        startDate = new Date('1980-01-01')
+        startDate = new Date('1900-01-01')
     }
 
     if (end_date) {
@@ -133,8 +134,9 @@ const getPatients = async (req, res) => {
     let endDate;
     if (start_date) {
         startDate = new Date(start_date)
+        startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
     } else {
-        startDate = new Date('1980-01-01')
+        startDate = new Date('1900-01-01')
     }
 
     if (end_date) {

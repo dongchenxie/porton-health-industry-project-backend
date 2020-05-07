@@ -82,7 +82,7 @@ const getAppointments = async (req, res) => {
     const { page = 1, perPage = 10, min_ahead = 15 } = req.query
     const _page = Number(page)
     const _perPage = Number(perPage)
-    const currentTime = Date.now()
+    const currentTime = new Date()
     let appointmentTime = new Date(currentTime)
     appointmentTime.setMinutes(appointmentTime.getMinutes() + min_ahead)
     

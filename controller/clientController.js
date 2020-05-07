@@ -11,6 +11,7 @@ const {
   getTerminalsValidation,
   updateTerminalValidation,
 } = require("../component/validation");
+const axios = require('axios').default;
 
 const getAppointmentById = async (req, res) => {
   const { appointmentId } = req.params;
@@ -136,6 +137,7 @@ const getAppointments = async (req, res) => {
   let endDate;
   if (start_date) {
     startDate = new Date(start_date);
+    startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
   } else {
     startDate = new Date();
     startDate.setHours(0);
@@ -395,6 +397,96 @@ const updateTerminalById = async (req, res) => {
   }
 };
 
+const createDummyAppointments = async (req, res) => {
+  const { start_time, end_time, step = 5 } = req.body
+  let startTime, endTime
+  if (step && (typeof step != "number" || step % 1 != 0 || step < 5)) {
+    return res.status(400).send({ error: 'Step must be an integer and not less than 5.' })
+  }
+
+  try {
+    if (!start_time) {
+      startTime = new Date()
+      startTime.setMinutes(0)
+      startTime.setSeconds(0)
+    } else {
+      startTime = new Date(start_time)
+    }
+
+    if (!end_time) {
+      endTime = new Date(startTime)
+      endTime.setHours(startTime.getHours() + 1)
+      endTime.setMinutes(59)
+      endTime.setMinutes(59)
+    } else {
+      if (new Date(startTime) > new Date(end_time)) {
+        return res.status(400).send({ error: 'End time must be greater than start time.' })
+      }
+      endTime = new Date(end_time)
+    }
+  } catch (err) {
+    return res.status(400).send({ error: 'Invalid start time/end time.' })
+  }
+
+  try {
+    let numberOfPatients = await Patient.countDocuments()
+    const target = 20
+    if (numberOfPatients < target) {
+      axios.get(`https://randomuser.me/api/?results=${target - numberOfPatients}&inc=name,gender,dob,email,phone&noinfo`)
+        .then(response => {
+          response.data.results.forEach(async person => {
+            let patient = new Patient({
+              firstName: person.name.first,
+              lastName: person.name.last,
+              email: person.email,
+              phoneNumber: person.phone,
+              mrp: "NA",
+              careCardNumber: "123456789",
+              comment: "NA",
+              dateOfBirth: person.dob.date.substring(0, person.dob.date.indexOf('T'))
+            })
+            await patient.save()
+          })
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
+
+    const patients = await Patient.find().limit(target)
+    const user = await User.findById(req.user._id)
+    let clinic = await Clinic.findById(user.clinic)
+    let count = 0
+    while (startTime <= endTime) {
+      if (count > 50) {
+        return
+      }
+
+      let patient = patients[Math.floor(Math.random() * target)]
+      let appointment = new Appointment({
+        doctorName: 'Dr Strange',
+        comment: 'NA',
+        reason: 'Cold',
+        status: 'PENDING',
+        appointmentTime: startTime,
+        clinic: user.clinic,
+        patient: patient._id
+      })
+      await appointment.save()
+      patient.appointments.push(appointment._id)
+      await patient.save()
+      clinic.appointments.push(appointment._id)
+      await clinic.save()
+      startTime.setMinutes(startTime.getMinutes() + step)
+      count++
+    }
+    return res.status(200).send({ details: "Data seeding finished." })
+  } catch (err) {
+    console.log(err)
+    return res.status(400).send({ error: 'Failed to seed data.' })
+  }
+}
+
 module.exports.getAppointmentById = getAppointmentById;
 module.exports.updateAppointmentById = updateAppointmentById;
 module.exports.getAppointments = getAppointments;
@@ -403,3 +495,4 @@ module.exports.deleteTerminal = deleteTerminal;
 module.exports.updateTerminalById = updateTerminalById;
 module.exports.getVerificationContent = getVerificationContent;
 module.exports.getTerminalById = getTerminalById;
+module.exports.createDummyAppointments = createDummyAppointments;
