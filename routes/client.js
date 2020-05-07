@@ -1,15 +1,6 @@
 const router = require("express").Router();
 
-const {
-  getAppointmentById,
-  deleteTerminal,
-  getTerminalById,
-  createTerminal,
-  updateAppointmentById,
-  getAppointments,
-  getTerminals,
-  getVerificationContent,
-} = require("../controller/clientController");
+const { getAppointmentById, deleteTerminal, updateAppointmentById, getAppointments, getVerificationContent, getTerminalById, getTerminals, updateTerminalById, createDummyAppointments, createTerminal, } = require("../controller/clientController")
 
 const { auth } = require("./verifyToken");
 
@@ -34,13 +25,11 @@ router.get("/terminal/:terminalId", auth("CLIENT_ADMIN"), async (req, res) => {
 });
 
 // Delete Client/Terminal/{id}
-router.delete(
-  "/terminal/:terminalId",
-  auth("CLIENT_ADMIN"),
-  async (req, res) => {
-    return await deleteTerminal(req, res);
-  }
-);
+router.delete("/terminal/:terminalId",
+    auth("CLIENT_ADMIN"),
+    async (req, res) => {
+        return await deleteTerminal(req, res)
+    })
 
 // Post Client/Terminal
 router.post(
@@ -91,4 +80,8 @@ router.put("/terminal/:terminalId", async (req, res) => {
   return await updateTerminalById(req, res);
 });
 
-module.exports = router;
+// Post Client/createDummyAppointments
+router.post("/createDummyAppointments", auth("CLIENT_ADMIN"), async (req, res) => {
+    return await createDummyAppointments(req, res)
+})
+module.exports = router
