@@ -182,7 +182,8 @@ const checkIn = async (req, res) => {
 
     for (let key in terminal.verificationContent) {
         if (terminal.verificationContent[key] == true) {
-            if (_content[key] && _content[key].toString().toUpperCase() != appointment.patient[key].toString().toUpperCase()) {
+            console.log(key)
+            if (appointment.patient[key]&&_content[key] && _content[key].toString().toUpperCase() != appointment.patient[key].toString().toUpperCase()) {
                 return res.status(400).send({ error: "Check-in information is not correct." })
             }
         }
