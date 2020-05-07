@@ -1,6 +1,8 @@
 const Terminal = require('../model/Terminal')
 const Appointment = require("../model/Appointment")
 const Patient = require('../model/Patient')
+const VerificationContent = require('../model/VerificationContent')
+const mongoose = require("mongoose")
 const jwt = require('jsonwebtoken')
 const { getTerminalAppointmentsValidation, terminalCheckInValidation } = require('../component/validation')
 
@@ -9,6 +11,9 @@ const login = async (req, res) => {
     let terminal = {}
     try {
         terminal = await Terminal.findOne({ token: token })
+        if(!terminal){
+            return res.status(401).send({ error: "Invalid terminal token." })
+        }
         if (terminal) {
             if (terminal.status == 'DELETED') {
                 return res.status(401).send({ error: "This terminal has been deleted." })
@@ -37,7 +42,38 @@ const getAppointmentById = async (req, res) => {
         return res.status(400).send({ error: "Invalid appointment ID." })
     }
 };
-
+const getVerificationContent = async (req, res) => {
+    const terminalId = req.terminal._id;
+  
+    try {
+      let terminal = await Terminal.aggregate([
+        {
+          $lookup: {
+            from: VerificationContent.collection.name,
+            localField: "verificationContent",
+            foreignField: "_id",
+            as: "verificationContent",
+          },
+        },
+        {
+          $match: {
+            _id: mongoose.Types.ObjectId(terminalId),
+            status: "ENABLED",
+          },
+        },
+      ]);
+  
+      if (terminal == "") {
+        return res
+          .status(400)
+          .send({ error: "No Active Terminal" });
+      }
+      return res.status(200).send({ terminal });
+    } catch (err) {
+        console.log(err)
+      return res.status(400).send({ error: "Invalid data request." });
+    }
+  };
 const getAppointments = async (req, res) => {
     const { error } = getTerminalAppointmentsValidation(req.query)
     if (error) {
@@ -49,7 +85,7 @@ const getAppointments = async (req, res) => {
     const currentTime = new Date()
     let appointmentTime = new Date(currentTime)
     appointmentTime.setMinutes(appointmentTime.getMinutes() + min_ahead)
-
+    
     try {
         const terminal = await Terminal.findById(req.terminal._id)
         let appointments = await Appointment.aggregate([
@@ -64,8 +100,8 @@ const getAppointments = async (req, res) => {
             {
                 $match: {
                     clinic: terminal.clinic,
-                    appointmentTime: { $gte: currentTime, $lte: appointmentTime },
-                    status: "PENDING"
+                    // appointmentTime: { $gte: currentTime, $lte: appointmentTime },
+                    // status: "PENDING"
                 }
             },
             {
@@ -103,18 +139,30 @@ const getAppointments = async (req, res) => {
 }
 
 const checkIn = async (req, res) => {
-    const { appointmentId, content } = req.body
-    const _content = JSON.parse(content)
-    let appointment = {}
-    let terminal = {}
+        const { appointmentId, content } = req.body
+        if(!req.body||!content||!appointmentId){
+            return res.status(400).send({ error: "Missing request body" })
+        }
+        let_content = ""
+        let appointment = {}
+        let terminal = {}
+        try{
+            _content = JSON.parse(content)
+           
+        }catch (err) {
+            return res.status(400).send("request body parse error")
+        }
+        
+   
     try {
+        
         appointment = await Appointment
             .findById(appointmentId)
             .populate('patient', '-__v -appointments')
             .select('-__v')
     } catch (err) {
         console.log(err)
-        return res.status(400).send({ error: "Invalid appointment ID." })
+        return res.status(400).send({ error: "Invalid appointment ID or request body." })
     }
 
     try {
@@ -152,3 +200,4 @@ module.exports.login = login
 module.exports.getAppointmentById = getAppointmentById
 module.exports.getAppointments = getAppointments
 module.exports.checkIn = checkIn
+module.exports.getVerificationContent=getVerificationContent
