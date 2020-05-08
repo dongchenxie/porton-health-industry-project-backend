@@ -52,7 +52,7 @@ var swaggerUi = require('swagger-ui-express'),
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const adminSeeding=async()=>{
     const result=await User.find()
-    console.log(result.length)
+    
     if(result.length==0){
         const bcrypt = require("bcryptjs")
         const salt = await bcrypt.genSalt(10);
