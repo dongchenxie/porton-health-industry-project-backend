@@ -57,12 +57,12 @@ const createTerminal = async (req, res) => {
   const verificationContent = new VerificationContent();
   const user = await User.findById(userId);
 
-    try {
-        await verificationContent.save()
-        //successfully
-    } catch (err) {
-        return res.status(400).send({ error: err })
-    }
+  try {
+    await verificationContent.save()
+    //successfully
+  } catch (err) {
+    return res.status(400).send({ error: err })
+  }
   try {
     const terminalExists =
       (await Terminal.findOne({
@@ -85,11 +85,11 @@ const createTerminal = async (req, res) => {
   for (var i = 0; i < maxTokenAttempt; i++) {
     const token2 = String(
       jwt.sign(
-        { _id: String((Math.random() * 1000000)+1000000).substring(1, 7)},
+        { _id: String((Math.random() * 1000000) + 1000000).substring(1, 7) },
         process.env.TOKEN_SECRET
       )
     )
-    .substring(100, 106).toUpperCase()
+      .substring(100, 106).toUpperCase()
     try {
       const tokenExists = await Terminal.findOne({
         token: token2,
@@ -533,8 +533,11 @@ const createDummyAppointments = async (req, res) => {
     let clinic = await Clinic.findById(user.clinic)
     let count = 0
     while (startTime <= endTime) {
-      if (count > 50) {
-        return
+      if (count > 1000) {
+        return res.status(200).send({
+          details: "First 1000 insertion is finished.",
+          lastStartTime: startTime
+        })
       }
 
       let patient = patients[Math.floor(Math.random() * target)]
