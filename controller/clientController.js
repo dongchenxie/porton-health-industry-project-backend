@@ -95,7 +95,6 @@ const createTerminal = async (req, res) => {
         token: token2,
       });
       if (tokenExists) {
-        console.log("Token Exists");
         if (i == maxTokenAttempt - 1) {
           return res.status(400).send({ error: "Toke Creation Failed." });
         }
