@@ -95,7 +95,6 @@ const createTerminal = async (req, res) => {
         token: token2,
       });
       if (tokenExists) {
-        console.log("Token Exists");
         if (i == maxTokenAttempt - 1) {
           return res.status(400).send({ error: "Toke Creation Failed." });
         }
@@ -518,6 +517,7 @@ const createDummyAppointments = async (req, res) => {
               mrp: "NA",
               careCardNumber: "123456789",
               comment: "NA",
+              gender: person.gender.toUpperCase(),
               dateOfBirth: person.dob.date.substring(0, person.dob.date.indexOf('T'))
             })
             await patient.save()

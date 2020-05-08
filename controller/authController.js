@@ -47,7 +47,6 @@ const loginController = async (req, res) => {
     }
     if (user.isEnabled == false) { return res.status(400).send({ error: "The account is not enabled." }) }
     //check password
-    console.log(user)
     const vaildPass = await bcrypt.compare(req.body.password, user.password)
     if (!vaildPass) {
         return res.status(400).send({ error: "Incorrect login information." })
@@ -55,9 +54,7 @@ const loginController = async (req, res) => {
     //Create token
     const exprieDate = new Date()
     exprieDate.setDate(exprieDate.getDate() + 14)
-    console.log(exprieDate)
     const token = jwt.sign({ _id: user.id, expire_date: exprieDate, password: user.password }, process.env.TOKEN_SECRET)
-    console.log({ token: token, role: user.role })
     user.password = null
     return res.header('auth-token', token).send({ token: token, role: user.role, user: user })
 }
@@ -174,7 +171,6 @@ const updatePermissionController = async (req, res) => {
 
 const getTokenInformationController = async (req, res) => {
     const { token } = req.params
-    console.log(token)
     if (!token) return res.status(401).send({ error: "Missing auth token" })
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);

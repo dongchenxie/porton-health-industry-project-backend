@@ -9,7 +9,7 @@ const terminalAuth = async (req, res, next) => {
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET)
         const terminal = await Terminal.findById({ _id: verified._id })
-        console.log(terminal.name + " connected")
+
         if (terminal) {
             if (terminal.status == 'DELETED') {
                 return res.status(401).send({ error: "This terminal has been deleted." })

@@ -17,7 +17,6 @@ const getAppointments = async (req, res) => {
     let endDate;
     if (start_date) {
         startDate = new Date(start_date)
-        startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
     } else {
         startDate = new Date('1900-01-01')
     }
@@ -48,9 +47,9 @@ const getAppointments = async (req, res) => {
     const projectHelper = (query) => {
         const nameMap = {
             lastName: 'patient.lastName',
-            appointmentTime: 'appoimentTime',
+            appointmentTime: 'appointmentTime',
             phoneNumber: 'patient.phoneNumber',
-            careCardNUmber: 'patient.careCardNumber',
+            careCardNumber: 'patient.careCardNumber',
             gender: 'patient.gender',
             status: 'status',
             comment: 'comment',
@@ -134,7 +133,6 @@ const getPatients = async (req, res) => {
     let endDate;
     if (start_date) {
         startDate = new Date(start_date)
-        startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
     } else {
         startDate = new Date('1900-01-01')
     }
