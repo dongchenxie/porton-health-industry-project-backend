@@ -41,7 +41,8 @@
             "schema": {
               "required": [
                 "email",
-                "name",
+                "firstName",
+                "lastName",
                 "password"
               ],
               "properties": {
@@ -50,14 +51,21 @@
                   "uniqueItems": true,
                   "example": "sample@email.com"
                 },
-                "role":{
+                "role": {
                   "type": "string",
-                  "enum": ["SYSTEM_ADMIN", "CLIENT_ADMIN"],
+                  "enum": [
+                    "SYSTEM_ADMIN",
+                    "CLIENT_ADMIN"
+                  ],
                   "example": "SYSTEM_ADMIN"
                 },
-                "name": {
+                "firstName": {
                   "type": "string",
-                  "example": "Kimo liang"
+                  "example": "Kimo"
+                },
+                "lastName": {
+                  "type": "string",
+                  "example": "Liang"
                 },
                 "password": {
                   "type": "string",
@@ -68,30 +76,21 @@
           },
           {
             "name": "auth-token",
-            "in":"header",
-            "required":true,
+            "in": "header",
+            "required": true,
             "description": "A jwt from a system admin user",
-            "type":"string"
+            "type": "string"
           }
         ],
         "produces": [
           "application/json"
         ],
         "responses": {
-          "200": {
-            "description": "New user is created",
-            "schema": {
-              "properties":{
-                "user":{
-                  "type":"string",
-                  "description":"user id"
-                }
-              }
-            }
+          "201": {
+            "description": "Success"
           }
         }
       }
-      
     },
     "/user/login": {
       "post": {
@@ -114,43 +113,144 @@
         ],
         "responses": {
           "200": {
-            "description": "New user is created",
+            "description": "Success",
             "schema": {
-              "properties":{
-                "token":{
-                  "type":"string",
-                  "description":"a JWT records user id, user role, exp date"
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "a JWT records user id, user role, exp date"
                 },
-                "role":{
-                  "type":"string",
-                  "description":"user role, can be system_admin, and clinic_admin"
+                "role": {
+                  "type": "string",
+                  "description": "user role, can be system_admin, and clinic_admin"
                 }
               }
             }
           }
         }
       }
-      
     },
-    "/user/permission/{userId}":{
+    "/user/permission/{userId}": {
       "put": {
         "tags": [
           "System Admin"
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID of user that we want to find",
+            "type": "string"
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains user data",
+            "type": "string"
+          },
+          {
+            "name": "permission",
+            "in": "body",
+            "required": true,
+            "description": "input the password you want to reset",
+            "schema":{
+              "required": [
+                "isENabled"
+              ],
+              "properties": {
+                
+                "isEnabled": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
       }
     },
-    "/user/resetpassword/{userId}":{
+    "/user/resetpassword/{userId}": {
       "put": {
         "tags": [
           "System Admin"
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID of user that we want to find",
+            "type": "string"
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains user data",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "required": true,
+            "description": "input the password you want to reset",
+            "schema":{
+              "required": [
+                "password"
+              ],
+              "properties": {
+                
+                "password": {
+                  "type": "string",
+                  "example": "password"
+                }
+              }
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/user/readtoken/{token}":{
+    "/user/readtoken/{token}": {
       "get": {
         "tags": [
           "Users"
-        ]
+        ],
+        "description": "Get the user information with token",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "ID of user that we want to find",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
     "/user/{userId}": {
@@ -164,10 +264,10 @@
         },
         {
           "name": "auth-token",
-          "in":"header",
-          "required":true,
+          "in": "header",
+          "required": true,
           "description": "JWT contains user data",
-          "type":"string"
+          "type": "string"
         }
       ],
       "get": {
@@ -177,34 +277,7 @@
         "summary": "Get user with given id (under construction)",
         "responses": {
           "200": {
-            "description": "User is found",
-            "schema": {
-              "required": [
-                "email",
-                "name",
-                "password"
-              ],
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "uniqueItems": true,
-                  "example": "sample@email.com"
-                },
-                "role":{
-                  "type": "string",
-                  "enum": ["SYSTEM_ADMIN", "CLIENT_ADMIN"],
-                  "example": "SYSTEM_ADMIN"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "Kimo liang"
-                },
-                "password": {
-                  "type": "string",
-                  "example": "password"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       },
@@ -222,76 +295,569 @@
               "$ref": "#/definitions/User"
             }
           }
+          
         ],
         "responses": {
           "200": {
-            "description": "User is updated",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
+            "description": "User is updated"
           }
         }
       }
     },
-    "/clinics":{
+    "/clinics": {
+      "parameters": [
+        {
+          "name": "auth-token",
+          "in": "header",
+          "required": true,
+          "description": "JWT contains user data (paste your jwt here)",
+          "type": "string"
+        }
+      ],
       "get": {
         "tags": [
           "System Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/users":{
+    "/users": {
       "get": {
         "tags": [
           "System Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains user data",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "A string you want to search for",
+            "type": "string"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "number of items in each page",
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "page number",
+            "type": "number"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "sorting method",
+            "type": "string",
+            "example":"firstName.asc",
+            "enum":["firstName.asc","firstName.desc","lastName.asc","lastName.desc","email.asc","email.desc","date.asc","date.desc","role.asc","role.desc"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/terminals":{
-      "get":{
+    "/terminals": {
+      "parameters": [
+        {
+          "name": "auth-token",
+          "in": "header",
+          "required": true,
+          "description": "JWT contains user data (paste your jwt here)",
+          "type": "string"
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "description": "A string you want to search for",
+          "type": "string"
+        },
+        {
+          "name": "perPage",
+          "in": "query",
+          "description": "number of items in each page",
+          "type": "number"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "description": "page number",
+          "type": "number"
+        }
+      ],
+      "get": {
         "tags": [
           "Client Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/appointment/{appointmentId}":{
-      "get":{
+    "/appointment/{appointmentId}": {
+      "parameters": [
+        {
+          "name": "auth-token",
+          "in": "header",
+          "required": true,
+          "description": "JWT contains user data (paste your jwt here)",
+          "type": "string"
+        },
+        {
+          "name": "appointmentId",
+          "in": "path",
+          "required": true,
+          "description": "ID of appointment that we want to find",
+          "type": "string"
+        }
+      ],
+      "get": {
         "tags": [
           "Client Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       },
-      "put":{
+      "put": {
         "tags": [
           "Client Admin"
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains user data (paste your jwt here)",
+            "type": "string"
+          },
+          {
+            "name": "appointmentId",
+            "in": "path",
+            "required": true,
+            "description": "ID of appointment that we want to find",
+            "type": "string"
+          },
+          {
+            "name": "request body",
+            "in": "body",
+            "required": true,
+            "description": "Some specs for this API",
+            "schema": {
+              
+              "properties": {
+                "appointmentTime": {
+                  "type": "date",
+                  "required":true,
+                  "example": "2020-05-06 10:00"
+                },
+                "doctorName": {
+                  "type": "string",
+                  "required":true,
+                  "example": "Dr strange"
+                },
+                "reason": {
+                  "type": "string",
+                  "required":true,
+                  "example": "Cold"
+                },
+                "status": {
+                  "type": "string",
+                  "required":true,
+                  "enum":["NOT_SHOW","PENDING","CHECK_IN"]
+                },
+                "comment": {
+                  "type": "string",
+                  "required":true,
+                  "example": "Dr strange"
+                },
+                "clinic":{
+                  "type": "string",
+                  "required":true,
+                  "description":"A clinic id associated with this appointmentTime"
+                },
+                "patient":{
+                  "type": "string",
+                  "required":true,
+                  "description":"A patient id associated with this appointmentTime"
+                }
+              }
+            }
+          }
+          
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/report/appointments":{
-      "get":{
+    "/report/appointments": {
+      "parameters": [
+        {
+          "name": "auth-token",
+          "in": "header",
+          "required": true,
+          "description": "JWT contains user data (paste your jwt here)",
+          "type": "string"
+        },
+        {
+          "name": "appointmentTime",
+          "in": "query",
+          "description": "display appointment time or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "lastName",
+          "in": "query",
+          "description": "display lastName or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "phoneNumber",
+          "in": "query",
+          "description": "display phoneNumber or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "gender",
+          "in": "query",
+          "description": "display gender or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "careCardNumber",
+          "in": "query",
+          "description": "display careCardNumber or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "clinic",
+          "in": "query",
+          "description": "display clinic or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "description": "display status or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "comment",
+          "in": "query",
+          "description": "display comment or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "clinic_id",
+          "in": "query",
+          "description": "requires a clinic id, search for a specific clinic",
+          "type": "string"
+        },
+        {
+          "name": "start_date",
+          "in": "query",
+          "description": "limit the search area with a start date",
+          "example":"2020-05-01",
+          "type": "string"
+        },
+        {
+          "name": "end_date",
+          "in": "query",
+          "description": "limit the search area with a start date",
+          "example":"2020-06-01",
+          "type": "string"
+        },
+        
+        {
+          "name": "perPage",
+          "in": "query",
+          "description": "number of items in each page",
+          "type": "number"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "description": "page number",
+          "type": "number"
+        },
+        {
+          "name": "sort_by",
+          "in": "query",
+          "description": "sorting method",
+          "type": "string",
+          "example":"firstName.asc",
+          "enum":["appointmentTime.asc","appointmentTime.desc","patient.phoneNumber.asc","patient.phoneNumber.desc","patient.gender.asc","patient.gender.desc","patient.lastName.asc","patient.lastName.desc","patient.careCardNumber.asc","patient.careCardNumber.desc","status.asc","status.desc"]
+        }
+      ],
+      "get": {
         "tags": [
           "System Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/report/patients":{
-      "get":{
+    "/report/patients": {
+      "parameters": [
+        {
+          "name": "auth-token",
+          "in": "header",
+          "required": true,
+          "description": "JWT contains user data (paste your jwt here)",
+          "type": "string"
+        },
+        {
+          "name": "firstName",
+          "in": "query",
+          "description": "display firstName or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "lastName",
+          "in": "query",
+          "description": "display lastName or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "age",
+          "in": "query",
+          "description": "display age or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "gender",
+          "in": "query",
+          "description": "display gender or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "careCardNumber",
+          "in": "query",
+          "description": "display careCardNumber or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "mrp",
+          "in": "query",
+          "description": "display mrp or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "last_visit",
+          "in": "query",
+          "description": "display last_visit or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "phoneNumber",
+          "in": "query",
+          "description": "display  phoneNumber or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "number_of_visits",
+          "in": "query",
+          "description": "display number_of_visits or not",
+          
+          "type": "boolean"
+        },
+        {
+          "name": "comment",
+          "in": "query",
+          "description": "display comment or not",
+          
+          "type": "boolean"
+        },
+        
+        {
+          "name": "clinic_id",
+          "in": "query",
+          "description": "requires a clinic id, search for a specific clinic",
+          "type": "string"
+        },
+        {
+          "name": "start_date",
+          "in": "query",
+          "description": "limit the search area with a start date",
+          "example":"2020-05-01",
+          "type": "string"
+        },
+        {
+          "name": "end_date",
+          "in": "query",
+          "description": "limit the search area with a start date",
+          "example":"2020-06-01",
+          "type": "string"
+        },
+        
+        {
+          "name": "perPage",
+          "in": "query",
+          "description": "number of items in each page",
+          "type": "number"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "description": "page number",
+          "type": "number"
+        },
+        {
+          "name": "sort_by",
+          "in": "query",
+          "description": "sorting method",
+          "type": "string",
+          "example":"firstName.asc",
+          "enum":["firstName.asc","firstName.desc","phoneNumber.asc","phoneNumber.desc","lastName.asc","lastName.desc","careCardNumber.asc","careCardNumber.desc","gender.asc","gender.desc","mrp.asc","mrp.desc","dateOfBirth.asc","dateOfBirth.desc","last_visit.asc","last_visit.desc","number_of_visits.asc","number_of_visits.desc"]
+        }
+      ],
+      "get": {
         "tags": [
           "System Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/createDummyAppointments":{
-      "post":{
+    "/createDummyAppointments": {
+      "parameters": [
+        {
+          "name": "auth-token",
+          "in": "header",
+          "required": true,
+          "description": "JWT contains user data (paste your jwt here)",
+          "type": "string"
+        },
+        {
+          "name": "request body",
+          "in": "body",
+          "required": true,
+          "description": "Some specs for this API",
+          "schema": {
+            
+            "properties": {
+              "start_time": {
+                "type": "string",
+                "uniqueItems": true,
+                "example": "2020-05-06 10:00"
+              },
+              "end_time": {
+                "type": "string",
+                "uniqueItems": true,
+                "example": "2020-05-06 10:11"
+              },
+              "step": {
+                "type": "number",
+                "example": 5,
+                "disposition":"The interval for every two dummy appointments in minutes"
+              }
+            }
+          }
+        }
+
+      ],
+      "post": {
         "tags": [
           "Client Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "description":"Create dummy appointments for a client",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/appointments":{
-      "get":{
+    "/appointments": {
+      "parameters": [
+        {
+          "name": "auth-token",
+          "in": "header",
+          "required": true,
+          "description": "JWT contains user data (paste your jwt here)",
+          "type": "string"
+        }
+      ],
+      "get": {
         "tags": [
           "Client Admin"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
     "/client/terminal/{terminalId}": {
@@ -305,10 +871,10 @@
         },
         {
           "name": "auth-token",
-          "in":"header",
-          "required":true,
+          "in": "header",
+          "required": true,
           "description": "JWT contains terminal data",
-          "type":"string"
+          "type": "string"
         }
       ],
       "get": {
@@ -316,12 +882,29 @@
           "Client Admin"
         ],
         "summary": "Get terminal with given id (under construction)",
+        "parameters": [
+          {
+            "name": "terminalId",
+            "in": "path",
+            "required": true,
+            "description": "ID of terminal that we want to find",
+            "type": "string"
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains terminal data",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Terminal is found",
-            "schema": {
-              "$ref": "#/definitions/Terminal"
-            }
+            "schema": {}
           }
         }
       },
@@ -330,12 +913,34 @@
         "tags": [
           "Client Admin"
         ],
+        "parameters": [
+          {
+            "name": "terminalId",
+            "in": "path",
+            "required": true,
+            "description": "ID of terminal that we want to find",
+            "type": "string"
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains terminal data",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Terminal is deleted",
-            "schema": {
-              "$ref": "#/definitions/Terminal"
-            }
+            "schema": {}
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
           }
         }
       },
@@ -349,63 +954,144 @@
             "name": "terminal",
             "in": "body",
             "description": "Terminal with new values of properties",
-            "schema": {
-              "$ref": "#/definitions/Terminal"
-            }
+            "schema": {}
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains user data (paste your jwt here)",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "Terminal is updated",
-            "schema": {
-              "$ref": "#/definitions/Terminal"
-            }
+            "schema": {}
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
           }
         }
       }
     },
-    "/terminal/login":{
+    "/terminal/login": {
       "post": {
         "tags": [
-          "Terminal","Users"
-        ]
+          "Terminal",
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "body",
+            "required": true,
+            "description": "The access token for terminal",
+            "schema": {
+              "required": [
+                "token"
+              ],
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "uniqueItems": true,
+                  "description": "The access token for terminal",
+                  "example": "NA"
+                }
+              }
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/terminal/appointments":{
+    "/terminal/appointments": {
       "get": {
         "tags": [
           "Terminal"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "terminal",
+            "in": "body",
+            "description": "Terminal with new values of properties",
+            "schema": {}
+          }
         ]
+      },
+      "summary": "A api that will return a list of users",
+      "responses": {
+        "200": {
+          "description": "jwt worked! :)"
+        }
       }
     },
-    "/terminal/checkin":{
+    "/terminal/checkin": {
       "post": {
         "tags": [
           "Terminal"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-    "/terminal/verificationContent":{
+    "/terminal/verificationContent": {
       "post": {
         "tags": [
           "Terminal"
-        ]
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
-
-    "/posts":{
+    "/posts": {
       "parameters": [
         {
           "name": "auth-token",
-          "in":"header",
-          "required":true,
+          "in": "header",
+          "required": true,
           "description": "JWT contains user data (paste your jwt here)",
-          "type":"string"
+          "type": "string"
         }
       ],
       "get": {
         "tags": [
           "Posts"
+        ],
+        "produces": [
+          "application/json"
         ],
         "summary": "A test API for testing JWT",
         "responses": {
@@ -414,7 +1100,6 @@
           }
         }
       }
-
     }
   },
   "definitions": {
@@ -442,7 +1127,7 @@
     },
     "Users": {
       "type": "array",
-      "items":{
+      "items": {
         "$ref": "#/definitions/User"
       }
     },
@@ -477,11 +1162,11 @@
         "email": {
           "type": "string",
           "uniqueItems": true,
-          "example": "sample@email.com"
+          "example": "testsys@gmail.com"
         },
         "password": {
           "type": "string",
-          "example": "password"
+          "example": "123456"
         }
       }
     }
