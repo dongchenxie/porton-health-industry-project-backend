@@ -6,7 +6,7 @@
      $ npm install
      ```   
   2. Configure MongoDB connection:      
-     - Database named "test" has been already created with existing connection string.       
+     - You can use database named "test" already created with existing connection string. (skip to step 3)      
      - If you would like to create a new database:
      
        1. Modify the connection string in .env file:
@@ -15,7 +15,7 @@
           ```
        2. Do step 4 to run the program first, it will generate a system admin account:
           
-       3. Log in with:
+       3. You can log in the front end with the system admin account just created:
           ```
           email: admin@admin.com
           password: password
