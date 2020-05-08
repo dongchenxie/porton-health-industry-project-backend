@@ -17,12 +17,14 @@ const getAppointments = async (req, res) => {
     let endDate;
     if (start_date) {
         startDate = new Date(start_date)
+        startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
     } else {
         startDate = new Date('1900-01-01')
     }
 
     if (end_date) {
         endDate = new Date(end_date)
+        endDate.setMinutes(endDate.getMinutes() + endDate.getTimezoneOffset())
         if (endDate < startDate) {
             return res.status(400).send({ error: "End date must be greater than start date." })
         }
@@ -133,12 +135,14 @@ const getPatients = async (req, res) => {
     let endDate;
     if (start_date) {
         startDate = new Date(start_date)
+        startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
     } else {
         startDate = new Date('1900-01-01')
     }
 
     if (end_date) {
         endDate = new Date(end_date)
+        endDate.setMinutes(endDate.getMinutes() + endDate.getTimezoneOffset())
         if (endDate < startDate) {
             return res.status(400).send({ error: "End date must be greater than start date." })
         }
