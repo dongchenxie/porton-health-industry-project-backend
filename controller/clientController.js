@@ -214,13 +214,11 @@ const getAppointments = async (req, res) => {
     startDate.setMinutes(startDate.getMinutes() + startDate.getTimezoneOffset())
   } else {
     startDate = new Date();
-    startDate.setHours(0);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
   }
 
   if (end_date) {
     endDate = new Date(end_date);
+    endDate.setMinutes(endDate.getMinutes() + endDate.getTimezoneOffset());
     if (endDate < startDate) {
       return res
         .status(400)
@@ -229,9 +227,6 @@ const getAppointments = async (req, res) => {
   } else {
     endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 1);
-    endDate.setHours(23);
-    endDate.setMinutes(59);
-    endDate.setSeconds(59);
   }
 
   const searchString = new RegExp(search, "i");
