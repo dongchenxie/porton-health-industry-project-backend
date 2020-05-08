@@ -30,7 +30,7 @@
     "/user/register": {
       "post": {
         "tags": [
-          "Users"
+          "System Admin"
         ],
         "description": "Create new user in system",
         "parameters": [
@@ -39,8 +39,39 @@
             "in": "body",
             "description": "User that we want to create",
             "schema": {
-              "$ref": "#/definitions/UserRegister"
+              "required": [
+                "email",
+                "name",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "uniqueItems": true,
+                  "example": "sample@email.com"
+                },
+                "role":{
+                  "type": "string",
+                  "enum": ["SYSTEM_ADMIN", "CLIENT_ADMIN"],
+                  "example": "SYSTEM_ADMIN"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Kimo liang"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "password"
+                }
+              }
             }
+          },
+          {
+            "name": "auth-token",
+            "in":"header",
+            "required":true,
+            "description": "A jwt from a system admin user",
+            "type":"string"
           }
         ],
         "produces": [
@@ -101,6 +132,27 @@
       }
       
     },
+    "/user/permission/{userId}":{
+      "put": {
+        "tags": [
+          "System Admin"
+        ]
+      }
+    },
+    "/user/resetpassword/{userId}":{
+      "put": {
+        "tags": [
+          "System Admin"
+        ]
+      }
+    },
+    "/user/readtoken/{token}":{
+      "get": {
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/user/{userId}": {
       "parameters": [
         {
@@ -120,28 +172,38 @@
       ],
       "get": {
         "tags": [
-          "Users"
+          "System Admin"
         ],
         "summary": "Get user with given id (under construction)",
         "responses": {
           "200": {
             "description": "User is found",
             "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete user with given id (under construction)",
-        "tags": [
-          "Users"
-        ],
-        "responses": {
-          "200": {
-            "description": "User is deleted",
-            "schema": {
-              "$ref": "#/definitions/User"
+              "required": [
+                "email",
+                "name",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "uniqueItems": true,
+                  "example": "sample@email.com"
+                },
+                "role":{
+                  "type": "string",
+                  "enum": ["SYSTEM_ADMIN", "CLIENT_ADMIN"],
+                  "example": "SYSTEM_ADMIN"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Kimo liang"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "password"
+                }
+              }
             }
           }
         }
@@ -149,7 +211,7 @@
       "put": {
         "summary": "Update user with given id (under construction)",
         "tags": [
-          "Users"
+          "System Admin"
         ],
         "parameters": [
           {
@@ -171,6 +233,67 @@
         }
       }
     },
+    "/clinics":{
+      "get": {
+        "tags": [
+          "System Admin"
+        ]
+      }
+    },
+    "/users":{
+      "get": {
+        "tags": [
+          "System Admin"
+        ]
+      }
+    },
+    "/terminals":{
+      "get":{
+        "tags": [
+          "Client Admin"
+        ]
+      }
+    },
+    "/appointment/{appointmentId}":{
+      "get":{
+        "tags": [
+          "Client Admin"
+        ]
+      },
+      "put":{
+        "tags": [
+          "Client Admin"
+        ]
+      }
+    },
+    "/report/appointments":{
+      "get":{
+        "tags": [
+          "System Admin"
+        ]
+      }
+    },
+    "/report/patients":{
+      "get":{
+        "tags": [
+          "System Admin"
+        ]
+      }
+    },
+    "/createDummyAppointments":{
+      "post":{
+        "tags": [
+          "Client Admin"
+        ]
+      }
+    },
+    "/appointments":{
+      "get":{
+        "tags": [
+          "Client Admin"
+        ]
+      }
+    },
     "/client/terminal/{terminalId}": {
       "parameters": [
         {
@@ -190,7 +313,7 @@
       ],
       "get": {
         "tags": [
-          "Terminal"
+          "Client Admin"
         ],
         "summary": "Get terminal with given id (under construction)",
         "responses": {
@@ -205,7 +328,7 @@
       "delete": {
         "summary": "Delete terminal with given id (under construction)",
         "tags": [
-          "Terminal"
+          "Client Admin"
         ],
         "responses": {
           "200": {
@@ -219,7 +342,7 @@
       "put": {
         "summary": "Update terminal with given id (under construction)",
         "tags": [
-          "Terminal"
+          "Client Admin"
         ],
         "parameters": [
           {
@@ -241,7 +364,34 @@
         }
       }
     },
-
+    "/terminal/login":{
+      "post": {
+        "tags": [
+          "Terminal","Users"
+        ]
+      }
+    },
+    "/terminal/appointments":{
+      "get": {
+        "tags": [
+          "Terminal"
+        ]
+      }
+    },
+    "/terminal/checkin":{
+      "post": {
+        "tags": [
+          "Terminal"
+        ]
+      }
+    },
+    "/terminal/verificationContent":{
+      "post": {
+        "tags": [
+          "Terminal"
+        ]
+      }
+    },
 
     "/posts":{
       "parameters": [

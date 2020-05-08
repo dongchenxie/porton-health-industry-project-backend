@@ -9,7 +9,7 @@ const usersRoute = require("./routes/users")
 const clinicsRoute = require("./routes/clinics")
 const clientRoute = require("./routes/client")
 const reportRoute = require("./routes/report")
-
+const User= require("./model/User")
 const terminalRoute = require("./routes/terminal")
 
 
@@ -50,7 +50,30 @@ var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+const adminSeeding=async()=>{
+    const result=await User.find()
+    console.log(result.length)
+    if(result.length==0){
+        const bcrypt = require("bcryptjs")
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash("password", salt)
+        //create new users
+        const user = new User({
+            firstName: "admin",
+            lastName: "root",
+            email: "admin@admin.com",
+            password: hashedPassword,
+            role: "SYSTEM_ADMIN"
+        })
+        try {
+            await user.save()
+            return res.status(201).send()//successfully created an account
+        } catch (err) {
+            return res.status(400).send({ error: err })
+        }
+    }
+}
+adminSeeding()
 app.listen(3333, () => {
     console.log("server runing at port 3333")
 })
