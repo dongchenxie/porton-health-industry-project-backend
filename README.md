@@ -2,22 +2,32 @@
 
 ## Installation
   1. Install necessary dependencies:  
-  
-     ```$ npm install```
+     ```
+     $ npm install
+     ```   
+  2. Configure MongoDB connection:      
+     - You can use database named "test" already created with existing connection string. (skip to step 3)      
+     - If you would like to create a new database:
      
-  2. Configure MongoDB connection:
-  
-     1. Go to .env file and input connection string:  
-     
-        ```DB_CONNECTION = [your connection string ex. mongodb+srv://xxxxxxxx]```
-        
-     2. Download MongoDB Compass for database management: 
+       1. Modify the connection string in .env file:
+          ```
+          DB_CONNECTION = [your connection string ex. mongodb+srv://xxxxxxxx]
+          ```
+       2. Do step 4 to run the program first, it will generate a system admin account:
+          
+       3. You can log in the front end with the system admin account just created:
+          ```
+          email: admin@admin.com
+          password: password
+          ```       
+  3. Download MongoDB Compass for database management: 
      
         https://www.mongodb.com/download-center/compass
-     
-  3. Run the program:  
-  
-     ```$ npm start```
+  4. Run the program:  
+     ```
+     $ npm start
+     ```
 
 ## APIs
+- Base URL: http://localhost:3333/api/
 - Swagger document can be found at: http://localhost:3333/api-docs/
