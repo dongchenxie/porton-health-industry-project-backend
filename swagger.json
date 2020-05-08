@@ -942,6 +942,7 @@
         "tags": [
           "Client Admin"
         ],
+        "summary": "A queriable report API to get a list appointments",
         "produces": [
           "application/json"
         ],
@@ -1147,6 +1148,7 @@
         "produces": [
           "application/json"
         ],
+        "summary": "A queriable report API to get a list appointments associated with this terminal",
         "responses": {
           "200": {
             "description": "Success"
@@ -1230,6 +1232,7 @@
         "tags": [
           "Terminal"
         ],
+        "summary":"return the verification content required for this terminal",
         "description":"return the verification content required for this terminal",
         "produces": [
           "application/json"
@@ -1267,7 +1270,7 @@
         "produces": [
           "application/json"
         ],
-        "summary": "A test API for testing JWT",
+        "summary": "[Developer API] A test API for testing JWT",
         "responses": {
           "200": {
             "description": "jwt worked! :)"
