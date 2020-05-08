@@ -517,6 +517,7 @@ const createDummyAppointments = async (req, res) => {
               mrp: "NA",
               careCardNumber: "123456789",
               comment: "NA",
+              gender: person.gender.toUpperCase(),
               dateOfBirth: person.dob.date.substring(0, person.dob.date.indexOf('T'))
             })
             await patient.save()
