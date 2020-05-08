@@ -155,12 +155,11 @@
             "in": "body",
             "required": true,
             "description": "input the password you want to reset",
-            "schema":{
+            "schema": {
               "required": [
                 "isENabled"
               ],
               "properties": {
-                
                 "isEnabled": {
                   "type": "boolean",
                   "example": true
@@ -204,12 +203,11 @@
             "in": "body",
             "required": true,
             "description": "input the password you want to reset",
-            "schema":{
+            "schema": {
               "required": [
                 "password"
               ],
               "properties": {
-                
                 "password": {
                   "type": "string",
                   "example": "password"
@@ -274,7 +272,7 @@
         "tags": [
           "System Admin"
         ],
-        "summary": "Get user with given id (under construction)",
+        "summary": "Get user with given id",
         "responses": {
           "200": {
             "description": "Success"
@@ -282,7 +280,7 @@
         }
       },
       "put": {
-        "summary": "Update user with given id (under construction)",
+        "summary": "Update user with given id",
         "tags": [
           "System Admin"
         ],
@@ -295,7 +293,6 @@
               "$ref": "#/definitions/User"
             }
           }
-          
         ],
         "responses": {
           "200": {
@@ -367,8 +364,19 @@
             "in": "query",
             "description": "sorting method",
             "type": "string",
-            "example":"firstName.asc",
-            "enum":["firstName.asc","firstName.desc","lastName.asc","lastName.desc","email.asc","email.desc","date.asc","date.desc","role.asc","role.desc"]
+            "example": "firstName.asc",
+            "enum": [
+              "firstName.asc",
+              "firstName.desc",
+              "lastName.asc",
+              "lastName.desc",
+              "email.asc",
+              "email.desc",
+              "date.asc",
+              "date.desc",
+              "role.asc",
+              "role.desc"
+            ]
           }
         ],
         "responses": {
@@ -475,47 +483,49 @@
             "required": true,
             "description": "Some specs for this API",
             "schema": {
-              
               "properties": {
                 "appointmentTime": {
                   "type": "date",
-                  "required":true,
+                  "required": true,
                   "example": "2020-05-06 10:00"
                 },
                 "doctorName": {
                   "type": "string",
-                  "required":true,
+                  "required": true,
                   "example": "Dr strange"
                 },
                 "reason": {
                   "type": "string",
-                  "required":true,
+                  "required": true,
                   "example": "Cold"
                 },
                 "status": {
                   "type": "string",
-                  "required":true,
-                  "enum":["NOT_SHOW","PENDING","CHECK_IN"]
+                  "required": true,
+                  "enum": [
+                    "NOT_SHOW",
+                    "PENDING",
+                    "CHECK_IN"
+                  ]
                 },
                 "comment": {
                   "type": "string",
-                  "required":true,
+                  "required": true,
                   "example": "Dr strange"
                 },
-                "clinic":{
+                "clinic": {
                   "type": "string",
-                  "required":true,
-                  "description":"A clinic id associated with this appointmentTime"
+                  "required": true,
+                  "description": "A clinic id associated with this appointmentTime"
                 },
-                "patient":{
+                "patient": {
                   "type": "string",
-                  "required":true,
-                  "description":"A patient id associated with this appointmentTime"
+                  "required": true,
+                  "description": "A patient id associated with this appointmentTime"
                 }
               }
             }
           }
-          
         ],
         "produces": [
           "application/json"
@@ -537,59 +547,57 @@
           "type": "string"
         },
         {
+          "name": "search",
+          "in": "query",
+          "description": "A string you want to search for",
+          "type": "string"
+        },
+        {
           "name": "appointmentTime",
           "in": "query",
           "description": "display appointment time or not",
-          
           "type": "boolean"
         },
         {
           "name": "lastName",
           "in": "query",
           "description": "display lastName or not",
-          
           "type": "boolean"
         },
         {
           "name": "phoneNumber",
           "in": "query",
           "description": "display phoneNumber or not",
-          
           "type": "boolean"
         },
         {
           "name": "gender",
           "in": "query",
           "description": "display gender or not",
-          
           "type": "boolean"
         },
         {
           "name": "careCardNumber",
           "in": "query",
           "description": "display careCardNumber or not",
-          
           "type": "boolean"
         },
         {
           "name": "clinic",
           "in": "query",
           "description": "display clinic or not",
-          
           "type": "boolean"
         },
         {
           "name": "status",
           "in": "query",
           "description": "display status or not",
-          
           "type": "boolean"
         },
         {
           "name": "comment",
           "in": "query",
           "description": "display comment or not",
-          
           "type": "boolean"
         },
         {
@@ -602,17 +610,16 @@
           "name": "start_date",
           "in": "query",
           "description": "limit the search area with a start date",
-          "example":"2020-05-01",
-          "type": "string"
+          "example": "2020-05-01",
+          "type": "date"
         },
         {
           "name": "end_date",
           "in": "query",
           "description": "limit the search area with a start date",
-          "example":"2020-06-01",
-          "type": "string"
+          "example": "2020-06-01",
+          "type": "date"
         },
-        
         {
           "name": "perPage",
           "in": "query",
@@ -630,8 +637,21 @@
           "in": "query",
           "description": "sorting method",
           "type": "string",
-          "example":"firstName.asc",
-          "enum":["appointmentTime.asc","appointmentTime.desc","patient.phoneNumber.asc","patient.phoneNumber.desc","patient.gender.asc","patient.gender.desc","patient.lastName.asc","patient.lastName.desc","patient.careCardNumber.asc","patient.careCardNumber.desc","status.asc","status.desc"]
+          "example": "firstName.asc",
+          "enum": [
+            "appointmentTime.asc",
+            "appointmentTime.desc",
+            "patient.phoneNumber.asc",
+            "patient.phoneNumber.desc",
+            "patient.gender.asc",
+            "patient.gender.desc",
+            "patient.lastName.asc",
+            "patient.lastName.desc",
+            "patient.careCardNumber.asc",
+            "patient.careCardNumber.desc",
+            "status.asc",
+            "status.desc"
+          ]
         }
       ],
       "get": {
@@ -661,73 +681,62 @@
           "name": "firstName",
           "in": "query",
           "description": "display firstName or not",
-          
           "type": "boolean"
         },
         {
           "name": "lastName",
           "in": "query",
           "description": "display lastName or not",
-          
           "type": "boolean"
         },
         {
           "name": "age",
           "in": "query",
           "description": "display age or not",
-          
           "type": "boolean"
         },
         {
           "name": "gender",
           "in": "query",
           "description": "display gender or not",
-          
           "type": "boolean"
         },
         {
           "name": "careCardNumber",
           "in": "query",
           "description": "display careCardNumber or not",
-          
           "type": "boolean"
         },
         {
           "name": "mrp",
           "in": "query",
           "description": "display mrp or not",
-          
           "type": "boolean"
         },
         {
           "name": "last_visit",
           "in": "query",
           "description": "display last_visit or not",
-          
           "type": "boolean"
         },
         {
           "name": "phoneNumber",
           "in": "query",
           "description": "display  phoneNumber or not",
-          
           "type": "boolean"
         },
         {
           "name": "number_of_visits",
           "in": "query",
           "description": "display number_of_visits or not",
-          
           "type": "boolean"
         },
         {
           "name": "comment",
           "in": "query",
           "description": "display comment or not",
-          
           "type": "boolean"
         },
-        
         {
           "name": "clinic_id",
           "in": "query",
@@ -738,17 +747,16 @@
           "name": "start_date",
           "in": "query",
           "description": "limit the search area with a start date",
-          "example":"2020-05-01",
+          "example": "2020-05-01",
           "type": "string"
         },
         {
           "name": "end_date",
           "in": "query",
           "description": "limit the search area with a start date",
-          "example":"2020-06-01",
+          "example": "2020-06-01",
           "type": "string"
         },
-        
         {
           "name": "perPage",
           "in": "query",
@@ -766,8 +774,27 @@
           "in": "query",
           "description": "sorting method",
           "type": "string",
-          "example":"firstName.asc",
-          "enum":["firstName.asc","firstName.desc","phoneNumber.asc","phoneNumber.desc","lastName.asc","lastName.desc","careCardNumber.asc","careCardNumber.desc","gender.asc","gender.desc","mrp.asc","mrp.desc","dateOfBirth.asc","dateOfBirth.desc","last_visit.asc","last_visit.desc","number_of_visits.asc","number_of_visits.desc"]
+          "example": "firstName.asc",
+          "enum": [
+            "firstName.asc",
+            "firstName.desc",
+            "phoneNumber.asc",
+            "phoneNumber.desc",
+            "lastName.asc",
+            "lastName.desc",
+            "careCardNumber.asc",
+            "careCardNumber.desc",
+            "gender.asc",
+            "gender.desc",
+            "mrp.asc",
+            "mrp.desc",
+            "dateOfBirth.asc",
+            "dateOfBirth.desc",
+            "last_visit.asc",
+            "last_visit.desc",
+            "number_of_visits.asc",
+            "number_of_visits.desc"
+          ]
         }
       ],
       "get": {
@@ -799,7 +826,6 @@
           "required": true,
           "description": "Some specs for this API",
           "schema": {
-            
             "properties": {
               "start_time": {
                 "type": "string",
@@ -814,12 +840,11 @@
               "step": {
                 "type": "number",
                 "example": 5,
-                "disposition":"The interval for every two dummy appointments in minutes"
+                "disposition": "The interval for every two dummy appointments in minutes"
               }
             }
           }
         }
-
       ],
       "post": {
         "tags": [
@@ -828,7 +853,7 @@
         "produces": [
           "application/json"
         ],
-        "description":"Create dummy appointments for a client",
+        "description": "Create dummy appointments for a client",
         "responses": {
           "200": {
             "description": "Success"
@@ -844,6 +869,59 @@
           "required": true,
           "description": "JWT contains user data (paste your jwt here)",
           "type": "string"
+        },
+        {
+          "name": "start_date",
+          "in": "query",
+          "description": "limit the search area with a start date",
+          "example": "2020-05-01",
+          "type": "string"
+        },
+        {
+          "name": "end_date",
+          "in": "query",
+          "description": "limit the search area with a start date",
+          "example": "2020-06-01",
+          "type": "string"
+        },
+        {
+          "name": "perPage",
+          "in": "query",
+          "description": "number of items in each page",
+          "type": "number"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "description": "page number",
+          "type": "number"
+        },
+        {
+          "name": "sort_by",
+          "in": "query",
+          "description": "sorting method",
+          "type": "string",
+          "example": "firstName.asc",
+          "enum": [
+            "firstName.asc",
+            "firstName.desc",
+            "phoneNumber.asc",
+            "phoneNumber.desc",
+            "lastName.asc",
+            "lastName.desc",
+            "careCardNumber.asc",
+            "careCardNumber.desc",
+            "gender.asc",
+            "gender.desc",
+            "mrp.asc",
+            "mrp.desc",
+            "dateOfBirth.asc",
+            "dateOfBirth.desc",
+            "last_visit.asc",
+            "last_visit.desc",
+            "number_of_visits.asc",
+            "number_of_visits.desc"
+          ]
         }
       ],
       "get": {
@@ -858,6 +936,40 @@
             "description": "Success"
           }
         }
+      }
+    },
+    "/client/terminal/{terminalName}": {
+      "post": {
+        "summary": "Update terminal with given id",
+        "tags": [
+          "Client Admin"
+        ],
+        "parameters": [
+          {
+            "name": "terminalName",
+            "in": "path",
+            "description": "Terminal with new values of properties",
+            "required": true,
+            "type": "string",
+            "example": "Dele's terminal"
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains user data (paste your jwt here)",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Terminal is updated",
+            "schema": {}
+          }
+        },
+        "produces": [
+          "application/json"
+        ]
       }
     },
     "/client/terminal/{terminalId}": {
@@ -881,7 +993,7 @@
         "tags": [
           "Client Admin"
         ],
-        "summary": "Get terminal with given id (under construction)",
+        "summary": "Get terminal with given id",
         "parameters": [
           {
             "name": "terminalId",
@@ -909,7 +1021,7 @@
         }
       },
       "delete": {
-        "summary": "Delete terminal with given id (under construction)",
+        "summary": "Delete terminal with given id",
         "tags": [
           "Client Admin"
         ],
@@ -925,7 +1037,7 @@
             "name": "auth-token",
             "in": "header",
             "required": true,
-            "description": "JWT contains terminal data",
+            "description": "JWT contains client data",
             "type": "string"
           }
         ],
@@ -945,31 +1057,26 @@
         }
       },
       "put": {
-        "summary": "Update terminal with given id (under construction)",
+        "summary": "Update terminal with given id",
         "tags": [
           "Client Admin"
         ],
         "parameters": [
           {
-            "name": "terminal",
-            "in": "body",
-            "description": "Terminal with new values of properties",
-            "schema": {}
+            "name": "terminalId",
+            "in": "path",
+            "required": true,
+            "description": "ID of terminal that we want to find",
+            "type": "string"
           },
           {
             "name": "auth-token",
             "in": "header",
             "required": true,
-            "description": "JWT contains user data (paste your jwt here)",
+            "description": "JWT contains client data",
             "type": "string"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Terminal is updated",
-            "schema": {}
-          }
-        },
         "produces": [
           "application/json"
         ],
@@ -1032,10 +1139,29 @@
         },
         "parameters": [
           {
-            "name": "terminal",
-            "in": "body",
-            "description": "Terminal with new values of properties",
-            "schema": {}
+            "name": "terminal-token",
+            "in": "header",
+            "required": true,
+            "description": "JWT contains terminal data",
+            "type": "string"
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "number of items in each page",
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "page number",
+            "type": "number"
+          },
+          {
+            "name": "min_ahead",
+            "in": "query",
+            "description": "Get appointments that will check-in in min_ahead minutes",
+            "type": "number"
           }
         ]
       },
@@ -1054,6 +1180,28 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "name": "appointmentId",
+            "in": "body",
+            "description": "appointment you want to check in",
+            "type": "string"
+          },
+          {
+            "name": "content",
+            "in": "body",
+            "description": "a stringified object contains all the check information required by this terminal",
+            "type":"string",
+            "example":"{lastName:\"Simon\",dateOfBirth:\"1980-01-01\"}"
+          },
+          {
+            "name": "terminal-token",
+            "in": "header",
+            "required": true,
+            "description": "A jwt from a system admin user",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -1062,12 +1210,22 @@
       }
     },
     "/terminal/verificationContent": {
-      "post": {
+      "get": {
         "tags": [
           "Terminal"
         ],
+        "description":"return the verification content required for this terminal",
         "produces": [
           "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "terminal-token",
+            "in": "header",
+            "required": true,
+            "description": "A jwt from a system admin user",
+            "type": "string"
+          }
         ],
         "responses": {
           "200": {
