@@ -178,7 +178,7 @@ const getTokenInformationController = async (req, res) => {
     if (!token) return res.status(401).send({ error: "Missing auth token" })
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-        const user = await User.findOne({ _id: verified._id }).select("-password -__v")//mongoose query
+        const user = await User.findOne({ _id: verified._id }).select("-__v")//mongoose query
         if (!user) {
             res.status(400).send({ error: "Invalid Token" });
         }
@@ -186,6 +186,7 @@ const getTokenInformationController = async (req, res) => {
             res.status(400).send("Invalid Token");
         }
         if (user.isEnabled == false) { return res.status(400).send({ error: "The account is not enabled." }) }
+        user.password = null
         return res.status(200).send(user)
     } catch (e) {
         res.status(400).send({ error: "Invalid Token" });
