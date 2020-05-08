@@ -181,9 +181,12 @@ const checkIn = async (req, res) => {
     }
 
     for (let key in terminal.verificationContent) {
-        if (terminal.verificationContent[key] == true) {
-            
-            if (appointment.patient[key]&&_content[key] && _content[key].toString().toUpperCase() != appointment.patient[key].toString().toUpperCase()) {
+        if (terminal.verificationContent[key] == true && appointment.patient[key] && _content[key]) {
+            if (key == 'phoneNumberLast4' && _content[key] != appointment.patient['phoneNumber'].substring(appointment.patient['phoneNumber'].length - 4)) {
+                return res.status(400).send({ error: "Check-in information is not correct." })
+            } else if (key == 'careCardLast4' && _content[key] != appointment.patient['careCardNumber'].substring(appointment.patient['careCardNumber'].length - 4)) {
+                return res.status(400).send({ error: "Check-in information is not correct." })
+            } else if (_content[key].toString().toUpperCase() != appointment.patient[key].toString().toUpperCase()) {
                 return res.status(400).send({ error: "Check-in information is not correct." })
             }
         }

@@ -32,6 +32,7 @@
         "tags": [
           "System Admin"
         ],
+        "summary": "Create a new account",
         "description": "Create new user in system",
         "parameters": [
           {
@@ -97,6 +98,7 @@
         "tags": [
           "Users"
         ],
+        "summary": "Get JWT from the servre with username and password",
         "description": "login user in system",
         "parameters": [
           {
@@ -135,6 +137,7 @@
         "tags": [
           "System Admin"
         ],
+        "summary": "Enable or disable a user",
         "parameters": [
           {
             "name": "userId",
@@ -183,6 +186,7 @@
         "tags": [
           "System Admin"
         ],
+        "summary": "change user's password",
         "parameters": [
           {
             "name": "userId",
@@ -231,6 +235,7 @@
         "tags": [
           "Users"
         ],
+        "summary": "Get user's information with exsiting JWT token",
         "description": "Get the user information with token",
         "parameters": [
           {
@@ -272,6 +277,7 @@
         "tags": [
           "System Admin"
         ],
+       
         "summary": "Get user with given id",
         "responses": {
           "200": {
@@ -315,6 +321,7 @@
         "tags": [
           "System Admin"
         ],
+        "summary": "An API to get a list of clients",
         "produces": [
           "application/json"
         ],
@@ -330,6 +337,7 @@
         "tags": [
           "System Admin"
         ],
+        "summary": "A queriable API to get a list of users for a client",
         "produces": [
           "application/json"
         ],
@@ -418,6 +426,7 @@
         "tags": [
           "Client Admin"
         ],
+        "summary": "A queriable API to get a list of terminals for a client",
         "produces": [
           "application/json"
         ],
@@ -449,6 +458,7 @@
         "tags": [
           "Client Admin"
         ],
+        "summary": "Get Appointment information with given id",
         "produces": [
           "application/json"
         ],
@@ -462,6 +472,7 @@
         "tags": [
           "Client Admin"
         ],
+        "summary": "Update Appointment information with given id",
         "parameters": [
           {
             "name": "auth-token",
@@ -658,6 +669,7 @@
         "tags": [
           "System Admin"
         ],
+        "summary": "A queriable report API to get the report for appointments",
         "produces": [
           "application/json"
         ],
@@ -674,7 +686,7 @@
           "name": "auth-token",
           "in": "header",
           "required": true,
-          "description": "JWT contains user data (paste your jwt here)",
+          "description": "JWT contains system admin data (paste your jwt here)",
           "type": "string"
         },
         {
@@ -801,6 +813,7 @@
         "tags": [
           "System Admin"
         ],
+        "summary": "A queriable report API to get the report for patients",
         "produces": [
           "application/json"
         ],
@@ -817,7 +830,7 @@
           "name": "auth-token",
           "in": "header",
           "required": true,
-          "description": "JWT contains user data (paste your jwt here)",
+          "description": "JWT contains client admin data (paste your jwt here)",
           "type": "string"
         },
         {
@@ -850,10 +863,11 @@
         "tags": [
           "Client Admin"
         ],
+        "summary": "[Developer API] creating dummy appointments for a client",
         "produces": [
           "application/json"
         ],
-        "description": "Create dummy appointments for a client",
+        "description": "Create dummy appointments for a client(for develope purpose only)",
         "responses": {
           "200": {
             "description": "Success"
@@ -940,7 +954,7 @@
     },
     "/client/terminal/{terminalName}": {
       "post": {
-        "summary": "Update terminal with given id",
+        "summary": "Create a terminal with given name",
         "tags": [
           "Client Admin"
         ],
@@ -985,7 +999,7 @@
           "name": "auth-token",
           "in": "header",
           "required": true,
-          "description": "JWT contains terminal data",
+          "description": "JWT contains client admin data",
           "type": "string"
         }
       ],
@@ -1006,7 +1020,7 @@
             "name": "auth-token",
             "in": "header",
             "required": true,
-            "description": "JWT contains terminal data",
+            "description": "JWT contains client admin data",
             "type": "string"
           }
         ],
@@ -1021,7 +1035,7 @@
         }
       },
       "delete": {
-        "summary": "Delete terminal with given id",
+        "summary": "Change terminal status to \"DELETED\"  with given id",
         "tags": [
           "Client Admin"
         ],
@@ -1093,6 +1107,7 @@
           "Terminal",
           "Users"
         ],
+        "summary": "Get JWT token from the server with the access token for a terminal",
         "parameters": [
           {
             "name": "token",
@@ -1165,7 +1180,7 @@
           }
         ]
       },
-      "summary": "A api that will return a list of users",
+      "summary": "A queriable API that will return a list of users",
       "responses": {
         "200": {
           "description": "jwt worked! :)"
@@ -1177,6 +1192,7 @@
         "tags": [
           "Terminal"
         ],
+        "summary": "Check in to an pending appointment",
         "produces": [
           "application/json"
         ],
@@ -1184,7 +1200,7 @@
           {
             "name": "appointmentId",
             "in": "body",
-            "description": "appointment you want to check in",
+            "description": "appointment id you want to check in",
             "type": "string"
           },
           {
