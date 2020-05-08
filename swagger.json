@@ -16,6 +16,7 @@
       "name": "Users",
       "description": "API for users in the system"
     }
+    
   ],
   "schemes": [
     "http"
@@ -1090,6 +1091,60 @@
             "required": true,
             "description": "JWT contains client data",
             "type": "string"
+          },
+          {
+            "name": "request body",
+            "in": "body",
+            "required": true,
+            "description": "Some specs for this API",
+            "schema": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "uniqueItems": true,
+                  "example": "2020-05-06 10:00"
+                },
+                "status": {
+                  "type": "string",
+                  "uniqueItems": true,
+                  "example": "2020-05-06 10:11"
+                },
+                "verificationContent": {
+                  "type": "object",
+                  "properties": {
+                    "firstName": {
+                      "type": "Boolean",
+                      "example": true
+                    },
+                    "lastName": {
+                      "type": "Boolean",
+                      "example": true
+                    },
+                    "phoneNumber": {
+                      "type": "Boolean",
+                      "example": true
+                    },
+                    "phoneNumberLast4": {
+                      "type": "Boolean",
+                      "example": true
+                    },
+                    "careCardNumber": {
+                      "type": "Boolean",
+                      "example": true
+                    },
+                    "careCardLast4": {
+                      "type": "Boolean",
+                      "example": true
+                    },
+                    "dateOfBirth":{
+                      "type": "Boolean",
+                      "example": true
+                    }
+                    
+                  }
+                }
+              }
+            }
           }
         ],
         "produces": [
