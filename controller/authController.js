@@ -243,12 +243,11 @@ const getUsersController = async (req, res) => {
 }
 
 const getClinicsController = async (req, res) => {
-    try {
-        const clinics = await Clinic.find().select("-__v")
-        return res.status(200).send(clinics)
-    } catch (err) {
+    const clinics = await Clinic.find().select("-__v")
+    if (!clinics) {
         return res.status(400).send({ error: "Failed to get clinics." })
     }
+    return res.status(200).send(clinics)
 }
 
 module.exports.updatePermissionController = updatePermissionController;

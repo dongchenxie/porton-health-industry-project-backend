@@ -16,15 +16,14 @@ const axios = require('axios').default;
 
 const getAppointmentById = async (req, res) => {
   const { appointmentId } = req.params;
-  try {
-    const appointment = await Appointment
-      .findById(appointmentId)
-      .populate("patient", "-appointments -__v")
-      .select("-__v")
-    return res.status(200).send(appointment);
-  } catch (err) {
+  const appointment = await Appointment
+    .findById(appointmentId)
+    .populate("patient", "-appointments -__v")
+    .select("-__v")
+  if (!appointment) {
     return res.status(400).send({ error: "Invalid appointment ID." });
   }
+  return res.status(200).send(appointment);
 };
 
 const deleteTerminal = async (req, res) => {
@@ -130,11 +129,9 @@ const updateAppointmentById = async (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
   const { appointmentId } = req.params;
-  let appointment = {};
+  let appointment = await Appointment.findById(appointmentId).select("-__v");
   // Check if appointment exists
-  try {
-    appointment = await Appointment.findById(appointmentId).select("-__v");
-  } catch (err) {
+  if (!appointment) {
     return res.status(400).send({ error: "Invalid appointment ID." });
   }
   // Update appointment in clinic
@@ -418,12 +415,9 @@ const updateTerminalById = async (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
   const { terminalId } = req.params;
-  let terminal = {};
+  let terminal = await Terminal.findById(terminalId);
   // Check if terminal exists
-  try {
-    terminal = await Terminal.findById(terminalId);
-  } catch (err) {
-    console.log(err);
+  if (!terminal) {
     return res.status(400).send({ error: "Invalid terminal ID." });
   }
   if (terminal.status == "DELETED") {
