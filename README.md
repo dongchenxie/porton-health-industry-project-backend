@@ -6,7 +6,7 @@
      $ npm install
      ```   
   2. Configure MongoDB connection:      
-     - You can use database named "test" already created with existing connection string. (skip to step 3)      
+     - You can use database named "test" already created with existing connection string. (skip to step 3, and use the preset account in Development Accounts)      
      - If you would like to create a new database:
      
        1. Modify the connection string in .env file:
