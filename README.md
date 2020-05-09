@@ -27,6 +27,9 @@
      ```
      $ npm start
      ```
+## ERD
+
+![ERD](https://raw.githubusercontent.com/xdc811/porton-health-industry-project-backend/master/ERD.png)
 
 ## APIs
 - Base URL: http://localhost:3333/api/
